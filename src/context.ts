@@ -1,3 +1,7 @@
 import { createContext } from "react";
 
-export default createContext({});
+interface Context {
+  setIsLoggedIn?: (v: boolean) => void;
+}
+
+export default createContext<Context>({});

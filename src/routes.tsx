@@ -13,7 +13,7 @@ type RouteExtended = RouteProps & {
 
 const routes: Route[] = [
   { path: "/", import: () => import("~/pages") },
-  { path: "/:name", import: () => import("~/pages/ssr") },
+  { path: "/login", import: () => import("~/pages/login") },
 ];
 
 const isServerSide = typeof window === "undefined";
