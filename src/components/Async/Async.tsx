@@ -1,4 +1,5 @@
 import React from "react";
+import LinearProgress from "@mui/material/LinearProgress";
 import { matchPath } from "react-router";
 
 const Async = (
@@ -18,7 +19,7 @@ const Async = (
   }
 
   return (
-    <React.Suspense fallback={<div className="list">Loading...</div>}>
+    <React.Suspense fallback={<LinearProgress />}>
       <Component />
     </React.Suspense>
   );

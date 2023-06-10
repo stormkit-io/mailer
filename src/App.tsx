@@ -5,6 +5,7 @@ import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import LinearProgress from "@mui/material/LinearProgress";
+import Layout from "~/components/Layout";
 import theme from "./mui-theme";
 import Context from "./context";
 
@@ -13,15 +14,15 @@ interface Props {
 }
 
 export default function App({ routes }: Props) {
+  const token =
+    typeof localStorage !== "undefined" ? localStorage.getItem("login") : null;
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  let token: string | null = null;
 
   useEffect(() => {
-    const token = localStorage.getItem("login");
-
     if (!token) {
       setIsLoading(false);
       return;
@@ -42,7 +43,7 @@ export default function App({ routes }: Props) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [location.pathname, token]);
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
@@ -54,7 +55,9 @@ export default function App({ routes }: Props) {
     <StyledEngineProvider injectFirst>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Context.Provider value={{ setIsLoggedIn, accessToken: token }}>
+        <Context.Provider
+          value={{ setIsLoggedIn, isLoggedIn, accessToken: token }}
+        >
           <Box
             sx={{
               margin: "auto",
@@ -67,11 +70,13 @@ export default function App({ routes }: Props) {
           >
             {isLoading && <LinearProgress sx={{ width: 600 }} />}
             {!isLoading && (
-              <Routes>
-                {routes.map((route) => (
-                  <Route key={route.path} {...route}></Route>
-                ))}
-              </Routes>
+              <Layout>
+                <Routes>
+                  {routes.map((route) => (
+                    <Route key={route.path} {...route}></Route>
+                  ))}
+                </Routes>
+              </Layout>
             )}
           </Box>
         </Context.Provider>

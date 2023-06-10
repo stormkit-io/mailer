@@ -1,4 +1,4 @@
-import { FormEventHandler, useState, useContext } from "react";
+import { FormEventHandler, useState, useContext, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import Box from "@mui/material/Box";
@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Context from "../context";
 
 const Home: React.FC = () => {
-  const { setIsLoggedIn } = useContext(Context);
+  const { setIsLoggedIn, isLoggedIn } = useContext(Context);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +31,14 @@ const Home: React.FC = () => {
       }
     });
   };
+
+  console.log("IS LOGGED IN", isLoggedIn);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn]);
 
   return (
     <Box
