@@ -19,9 +19,11 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/lab": "^5.0.0-alpha.133",
     "@mui/material": "^5.13.4",
     "http-status-codes": "^2.2.0",
     "jose": "^4.14.4",
+    "nodemailer": "^6.9.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -30,6 +32,7 @@
     "@types/express": "^4.17.17",
     "@types/glob": "^8.1.0",
     "@types/node": "^20.2.3",
+    "@types/nodemailer": "^6.4.8",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
     "@vitejs/plugin-react": "^4.0.0",

@@ -17,6 +17,7 @@ export default function App({ routes }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  let token: string | null = null;
 
   useEffect(() => {
     const token = localStorage.getItem("login");
@@ -53,7 +54,7 @@ export default function App({ routes }: Props) {
     <StyledEngineProvider injectFirst>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Context.Provider value={{ setIsLoggedIn }}>
+        <Context.Provider value={{ setIsLoggedIn, accessToken: token }}>
           <Box
             sx={{
               margin: "auto",
