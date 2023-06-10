@@ -1,4 +1,5 @@
 import * as http from "node:http";
+import * as jwt from "jose";
 
 function readBody<T>(req: http.IncomingMessage): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -58,7 +59,59 @@ function send(
   res.end();
 }
 
+/**
+ * Checks whether the user is authorized or not. Pass either a
+ * token or a http headers as an argument.
+ */
+async function isAuthorized(
+  tokenOrHeaders: string | http.IncomingHttpHeaders
+): Promise<boolean> {
+  let token: string | void;
+
+  if (typeof tokenOrHeaders !== "string") {
+    token = extractBearerToken(tokenOrHeaders);
+  } else {
+    token = tokenOrHeaders;
+  }
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    await jwt.jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET)
+    );
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Helper function to extract the bearer token from the request headers.
+ */
+function extractBearerToken(headers: http.IncomingHttpHeaders): string | void {
+  const auth = headers["authorization"];
+
+  if (!auth) {
+    return;
+  }
+
+  const [authType, token] = auth.split(" ");
+
+  switch (authType.toLowerCase()) {
+    case "bearer":
+      return token;
+    default:
+      return;
+  }
+}
+
 export default {
+  isAuthorized,
   readBody,
   send,
 };
