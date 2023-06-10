@@ -1,6 +1,9 @@
 import { defineConfig } from "vite";
 import path from "node:path";
 import react from "@vitejs/plugin-react";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,6 +22,11 @@ export default defineConfig({
       input: "index.html",
     },
     outDir: ".stormkit/public",
+  },
+  define: {
+    "process.env.MAILER_FROM_ADDR": JSON.stringify(
+      process.env.MAILER_FROM_ADDR
+    ),
   },
   plugins: [react()],
 });
