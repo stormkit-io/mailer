@@ -17,8 +17,9 @@ interface RenderReturn {
 export type RenderFunction = (url: string) => Promise<RenderReturn>;
 
 const defaultSEO: SEO = {
-  title: "Vite + React (SSR, SSG, SPA)",
-  description: "Mono repo template for apps needing ssr, ssg and/or spa.",
+  title: "Stormkit Mailer",
+  description:
+    "Deploy your own free, open-source email service with a single click. Connect seamlessly with Gmail or Amazon SES for secure and customizable email management. Take control of your communication with ease.",
   domain: {
     name: "",
     url: "",
