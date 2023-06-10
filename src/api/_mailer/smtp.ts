@@ -11,15 +11,21 @@ export default {
       },
     });
 
-    const info = await transporter.sendMail({
-      from: process.env.MAILER_FROM_ADDR,
-      to: "hello@stormkit.io",
-      subject: "Test email from Stormkit Mailer",
-      html: "Hello <b>world</b>!",
-    });
+    let messageIds = [];
+
+    for (let email of emails) {
+      messageIds.push(
+        await transporter.sendMail({
+          from: process.env.MAILER_FROM_ADDR,
+          to: email,
+          subject: "Test email from Stormkit Mailer",
+          html: "Hello <b>world</b>!",
+        })
+      );
+    }
 
     return {
-      messageId: info.messageId,
+      messageIds,
     };
   },
 };
