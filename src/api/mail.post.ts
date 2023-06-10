@@ -1,7 +1,7 @@
 import http from "node:http";
 import { StatusCodes } from "http-status-codes";
 import { httpUtils as hu } from "./_utils";
-import Gmail from "./_mailer/gmail";
+import SMTP from "./_mailer/smtp";
 
 interface Body {
   templateId?: string;
@@ -26,7 +26,7 @@ async function mailer(emails: string[], templateId: string) {
   const template = "";
 
   if (process.env.SMTP_USERNAME && process.env.SMTP_PASSWORD) {
-    return Gmail.send(emails, template);
+    return SMTP.send(emails, template);
   }
 }
 
