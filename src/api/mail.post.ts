@@ -25,7 +25,7 @@ function validEmails(email: string | string[]): string[] {
 async function mailer(emails: string[], templateId: string) {
   const template = "";
 
-  if (process.env.GMAIL_USERNAME && process.env.GMAIL_PASSWORD) {
+  if (process.env.SMTP_USERNAME && process.env.SMTP_PASSWORD) {
     return Gmail.send(emails, template);
   }
 }

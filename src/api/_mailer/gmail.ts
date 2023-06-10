@@ -3,16 +3,16 @@ import nodemailer from "nodemailer";
 export default {
   send: async function (emails: string[], template: string) {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
+      host: process.env.SMTP_HOST || "smtp.gmail.com",
+      port: Number(process.env.SMTP_PORT) || 587,
       auth: {
-        user: process.env.GMAIL_USERNAME,
-        pass: process.env.GMAIL_PASSWORD,
+        user: process.env.SMTP_USERNAME,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
 
     const info = await transporter.sendMail({
-      from: '"Savas Vedova 👻" <savas.vedova@gmail.com>',
+      from: process.env.MAILER_FROM_ADDR,
       to: "hello@stormkit.io",
       subject: "Test email from Stormkit Mailer",
       html: "Hello <b>world</b>!",
