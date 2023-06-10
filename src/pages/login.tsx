@@ -32,8 +32,6 @@ const Home: React.FC = () => {
     });
   };
 
-  console.log("IS LOGGED IN", isLoggedIn);
-
   useEffect(() => {
     if (isLoggedIn) {
       navigate("/");
