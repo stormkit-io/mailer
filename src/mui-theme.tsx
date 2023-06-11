@@ -37,6 +37,24 @@ export default createTheme({
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          opacity: 0.4,
+          "&.Mui-focused": {
+            color: "white",
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          color: "white",
+        },
+      },
+    },
     MuiAlert: {
       styleOverrides: {
         standardWarning: {

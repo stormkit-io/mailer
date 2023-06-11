@@ -79,10 +79,8 @@ export default async (req: http.IncomingMessage, res: http.ServerResponse) => {
       await mailer({
         emails,
         templateId: body.templateId!,
-        data: {
-          preheader: "This is a test email",
-          content: "Hello <b>World</b>",
-        },
+        data: body.data,
+        subject: body.subject,
       })
     );
   } catch (e) {

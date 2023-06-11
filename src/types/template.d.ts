@@ -5,4 +5,5 @@ declare interface Template {
   description: string;
   defaultSubject?: string;
   isDefault?: boolean;
+  variables?: string[]; // list of variables available for this template
 }
