@@ -18,6 +18,7 @@ function readBody<T>(req: http.IncomingMessage): Promise<T> {
       })
       .on("end", () => {
         const body = Buffer.isBuffer(data) ? Buffer.concat(data) : data;
+
         const isUrlEncoded =
           req.headers["content-type"] === "application/x-www-form-urlencoded";
 
@@ -27,7 +28,11 @@ function readBody<T>(req: http.IncomingMessage): Promise<T> {
           );
         }
 
-        return resolve(JSON.parse(body.toString("utf-8")));
+        try {
+          return resolve(JSON.parse(body.toString("utf-8")));
+        } catch {
+          return resolve({} as T);
+        }
       });
   });
 }
