@@ -1,6 +1,6 @@
-# Stormkit Mailer
+# Stormkit Mailer (Under active development)
 
-Send automated emails, or launch campaigns through a simple API or an untuitive UI.
+Send automated emails, or launch campaigns through a simple API or an intuitive UI.
 
 ## Features
 
