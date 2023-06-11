@@ -25,6 +25,7 @@ Send automated emails, or launch campaigns through a simple API or an untuitive 
 **Legend**
 
 ✅ Ready to use
+
 ☑️ Incomplete or not yet started
 
 ## License
