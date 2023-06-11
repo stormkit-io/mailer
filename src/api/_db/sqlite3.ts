@@ -23,6 +23,7 @@ const store: SqliteStore = {
                 template_name TEXT NOT NULL,
                 template_html TEXT NOT NULL,
                 template_desc TEXT NULL,
+                default_subject TEXT NULL,
                 is_default BOOLEAN DEFAULT FALSE
            );`
         );
@@ -41,6 +42,7 @@ const store: SqliteStore = {
                 template_name as name,
                 template_html as html,
                 template_desc as description,
+                default_subject as defaultSubject,
                 is_default as isDefault
              FROM
                 templates
@@ -62,6 +64,35 @@ const store: SqliteStore = {
       });
     },
 
+    byId(id: string) {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.all<Template>(
+            `SELECT
+                        template_name as name,
+                        template_html as html,
+                        template_desc as description,
+                        default_subject as defaultSubject,
+                        is_default as isDefault
+                     FROM
+                        templates
+                     WHERE rowid = $recordId
+                     LIMIT 50`,
+            {
+              $recordId: Number(id),
+            },
+            (error, rows) => {
+              if (error) {
+                return reject(error);
+              }
+
+              resolve(rows[0] as Template);
+            }
+          );
+        });
+      });
+    },
+
     store(template) {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
@@ -73,13 +104,14 @@ const store: SqliteStore = {
 
           db.run(
             `INSERT INTO templates
-                (template_name, template_html, template_desc, is_default)
+                (template_name, template_html, template_desc, default_subject, is_default)
              VALUES
-                ($name, $html, $desc, $isDefault)`,
+                ($name, $html, $desc, $defaultSubject, $isDefault)`,
             {
               $name: template.name,
               $html: template.html,
               $desc: template.description,
+              $default_subject: template.defaultSubject || null,
               $isDefault: template.isDefault,
             },
             function (this: RunResult, err: Error | null) {

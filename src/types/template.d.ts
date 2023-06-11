@@ -3,5 +3,6 @@ declare interface Template {
   name: string;
   html: string;
   description: string;
+  defaultSubject?: string;
   isDefault?: boolean;
 }

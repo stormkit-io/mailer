@@ -1,5 +1,10 @@
 // Template from: https://github.com/leemunroe/responsive-html-email-template/blob/master/email.html
-export default `<!doctype html>
+const template: Template = {
+  recordId: "fallback",
+  name: "Standard Template",
+  description: "Default template that will be used to send emails.",
+  isDefault: true,
+  html: `<!doctype html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -345,7 +350,7 @@ export default `<!doctype html>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        {{ it.content }}
+                        {{ it.content | safe }}
                         {{ @if (it.callToActionText && it.callToActionHref) }}
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                             <tbody>
@@ -389,4 +394,7 @@ export default `<!doctype html>
       </tr>
     </table>
   </body>
-</html>`;
+</html>`,
+};
+
+export default template;
