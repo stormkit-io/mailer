@@ -26,7 +26,7 @@ Send automated emails, or launch campaigns through a simple API or an intuitive 
 
 ☑️ Incomplete or not yet started
 
-## Contributing
+## Local development
 
 ```bash
 $ git clone git@github.com:stormkit-io/mailer.git
