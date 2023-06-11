@@ -39,6 +39,13 @@ const files = glob
             find: /^~/,
             replacement: path.resolve(__dirname, "src"),
           },
+          {
+            find: /^sqlite3$/,
+            replacement: path.resolve(
+              __dirname,
+              "node_modules/sqlite3/lib/sqlite3.js"
+            ),
+          },
         ],
         extensions: [".ts", ".tsx"],
       },
