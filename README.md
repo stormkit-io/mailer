@@ -1,4 +1,4 @@
-# Stormkit Mailer (Under active development)
+# Stormkit Mailer (under active development)
 
 Send automated emails, or launch campaigns through a simple API or an intuitive UI.
 
@@ -20,13 +20,24 @@ Send automated emails, or launch campaigns through a simple API or an intuitive 
 
 ✅ &nbsp;**Free Forever:** Using Stormkit Mailer is free of charge
 
----
-
 **Legend**
 
 ✅ Ready to use
 
 ☑️ Incomplete or not yet started
+
+## Contributing
+
+```bash
+$ git clone git@github.com:stormkit-io/mailer.git
+$ cd mailer
+$ npm install
+$ npm run dev
+```
+
+✅ HMR enabled
+
+✅ To force restarting the server, type `rs` and hit Enter on the terminal
 
 ## License
 
