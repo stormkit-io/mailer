@@ -69,15 +69,15 @@ const store: SqliteStore = {
         db.serialize(() => {
           db.all<Template>(
             `SELECT
-                        template_name as name,
-                        template_html as html,
-                        template_desc as description,
-                        default_subject as defaultSubject,
-                        is_default as isDefault
-                     FROM
-                        templates
-                     WHERE rowid = $recordId
-                     LIMIT 50`,
+                template_name as name,
+                template_html as html,
+                template_desc as description,
+                default_subject as defaultSubject,
+                is_default as isDefault
+             FROM
+                templates
+             WHERE rowid = $recordId
+             LIMIT 50`,
             {
               $recordId: Number(id),
             },
