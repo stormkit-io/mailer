@@ -42,6 +42,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "glob": "^10.2.6",
+    "mock-aws-s3": "^4.0.2",
     "nodemon": "^2.0.22",
     "react-router": "^6.6.2",
     "react-router-dom": "^6.11.0",
