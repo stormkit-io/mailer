@@ -28,7 +28,13 @@ const files = glob
             withFileTypes: true,
           })
           .filter(
-            (dirent) => dirent.isDirectory() && !dirent.name.startsWith(".")
+            (dirent) =>
+              // Filter out if the directory does not start with a dot
+              dirent.isDirectory() &&
+              !dirent.name.startsWith(".") &&
+              // sqlite3 is using aws-sdk which increases the bundle significantly
+              // since it's designed for local development, ignore this.
+              ["sqlite3"].indexOf(dirent.name) > -1
           )
           .map((dirent) => new RegExp(dirent.name)),
       },
