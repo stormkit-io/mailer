@@ -111,11 +111,12 @@ const store: SqliteStore = {
               $name: template.name,
               $html: template.html,
               $desc: template.description,
-              $default_subject: template.defaultSubject || null,
-              $isDefault: template.isDefault,
+              $defaultSubject: template.defaultSubject || null,
+              $isDefault: template.isDefault || false,
             },
             function (this: RunResult, err: Error | null) {
               if (err) {
+                console.log("ERROR", err);
                 return reject(err);
               }
 

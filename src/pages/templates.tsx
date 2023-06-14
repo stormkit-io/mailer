@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -12,10 +12,13 @@ import Switch from "@mui/material/Switch";
 import Paper from "@mui/material/Paper";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import TemplateDialog from "~/components/TemplateDialog";
 import { useFetchTemplates } from "./templates.actions";
 
 export default function Templates() {
   const { templates } = useFetchTemplates();
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [editTemplate, setEditTemplate] = useState<Template>();
 
   return (
     <Box
@@ -39,7 +42,14 @@ export default function Templates() {
         <Typography variant="h5" color="info.main">
           Templates
         </Typography>
-        <Button variant="contained" color="secondary" sx={{ display: "none" }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            setIsTemplateDialogOpen(true);
+            setEditTemplate(undefined);
+          }}
+        >
           New Template
         </Button>
       </Box>
@@ -81,6 +91,15 @@ export default function Templates() {
           <Typography>Click New Template to create a new one.</Typography>
         </Alert>
       )}
+
+      <TemplateDialog
+        open={isTemplateDialogOpen || Boolean(editTemplate)}
+        template={editTemplate}
+        onClose={() => {
+          setIsTemplateDialogOpen(false);
+          setEditTemplate(undefined);
+        }}
+      />
     </Box>
   );
 }
