@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
-export function useFetchTemplates() {
+interface FetchTemplatesProps {
+  refreshToken?: number;
+}
+
+export function useFetchTemplates({ refreshToken }: FetchTemplatesProps = {}) {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -17,7 +21,7 @@ export function useFetchTemplates() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [refreshToken]);
 
   return { templates, isLoading, error };
 }

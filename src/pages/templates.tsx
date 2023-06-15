@@ -13,13 +13,30 @@ import Paper from "@mui/material/Paper";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import EditIcon from "@mui/icons-material/Edit";
 import TemplateDialog from "~/components/TemplateDialog";
 import { useFetchTemplates } from "./templates.actions";
 
 export default function Templates() {
-  const { templates, isLoading } = useFetchTemplates();
+  const [refreshToken, setRefreshToken] = useState(0);
+  const { templates, isLoading } = useFetchTemplates({ refreshToken });
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [editTemplate, setEditTemplate] = useState<Template>();
+
+  const handleMenuIconClick: React.MouseEventHandler = (event) => {
+    setAnchorEl(event.currentTarget as HTMLElement);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <Box
@@ -67,6 +84,7 @@ export default function Templates() {
                 <TableCell sx={{ fontWeight: "bold" }} align="right">
                   Default
                 </TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -80,6 +98,43 @@ export default function Templates() {
                   <TableCell>{template.description}</TableCell>
                   <TableCell align="right">
                     <Switch checked={template.isDefault} />
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={open ? "long-menu" : undefined}
+                      aria-expanded={open ? "true" : undefined}
+                      aria-haspopup="true"
+                      onClick={handleMenuIconClick}
+                    >
+                      <MoreHorizIcon />
+                    </IconButton>
+                    <Menu
+                      MenuListProps={{
+                        "aria-labelledby": "long-button",
+                      }}
+                      anchorEl={anchorEl}
+                      open={open}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      onClose={handleClose}
+                    >
+                      <MenuItem
+                        onClick={() => {
+                          setEditTemplate(template);
+                          setIsTemplateDialogOpen(true);
+                          setAnchorEl(null);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <EditIcon />
+                        </ListItemIcon>
+                        <Typography>Edit</Typography>
+                      </MenuItem>
+                    </Menu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -95,14 +150,21 @@ export default function Templates() {
         </Alert>
       )}
 
-      <TemplateDialog
-        open={isTemplateDialogOpen || Boolean(editTemplate)}
-        template={editTemplate}
-        onClose={() => {
-          setIsTemplateDialogOpen(false);
-          setEditTemplate(undefined);
-        }}
-      />
+      {(isTemplateDialogOpen || Boolean(editTemplate)) && (
+        <TemplateDialog
+          open
+          template={editTemplate}
+          onSuccess={() => {
+            setRefreshToken(Date.now());
+            setIsTemplateDialogOpen(false);
+            setEditTemplate(undefined);
+          }}
+          onClose={() => {
+            setIsTemplateDialogOpen(false);
+            setEditTemplate(undefined);
+          }}
+        />
+      )}
     </Box>
   );
 }

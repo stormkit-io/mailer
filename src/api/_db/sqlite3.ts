@@ -7,6 +7,67 @@ interface SqliteStore extends Store {
 
 const db = new sqlite3.Database(":memory:");
 
+function insert(template: Template): Promise<Template> {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO templates
+          (template_name, template_html, template_desc, default_subject, is_default)
+       VALUES
+          ($name, $html, $desc, $defaultSubject, $isDefault)`,
+      {
+        $name: template.name,
+        $html: template.html,
+        $desc: template.description,
+        $defaultSubject: template.defaultSubject || null,
+        $isDefault: template.isDefault || false,
+      },
+      function (this: RunResult, err: Error | null) {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve({
+          ...template,
+          recordId: this.lastID.toString(),
+        });
+      }
+    );
+  });
+}
+
+function update(template: Template): Promise<Template> {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE templates SET
+        template_name = $name,
+        template_html = $html,
+        template_desc = $desc,
+        default_subject = $defaultSubject,
+        is_default = $isDefault
+      WHERE 
+        rowid = $recordId;`,
+      {
+        $recordId: Number(template.recordId),
+        $name: template.name,
+        $html: template.html,
+        $desc: template.description,
+        $defaultSubject: template.defaultSubject || null,
+        $isDefault: template.isDefault || false,
+      },
+      function (this: RunResult, err: Error | null) {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve({
+          ...template,
+          recordId: this.lastID.toString(),
+        });
+      }
+    );
+  });
+}
+
 const store: SqliteStore = {
   setup() {
     return new Promise((resolve, reject) => {
@@ -90,6 +151,10 @@ const store: SqliteStore = {
       });
     },
 
+    /**
+     * Insert or update the given template. If the template contains a recordId,
+     * UPDATE statement will be executed, otherwise INSERT.
+     */
     store(template) {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
@@ -99,29 +164,11 @@ const store: SqliteStore = {
             );
           }
 
-          db.run(
-            `INSERT INTO templates
-                (template_name, template_html, template_desc, default_subject, is_default)
-             VALUES
-                ($name, $html, $desc, $defaultSubject, $isDefault)`,
-            {
-              $name: template.name,
-              $html: template.html,
-              $desc: template.description,
-              $defaultSubject: template.defaultSubject || null,
-              $isDefault: template.isDefault || false,
-            },
-            function (this: RunResult, err: Error | null) {
-              if (err) {
-                return reject(err);
-              }
+          if (!template.recordId) {
+            return insert(template).then(resolve).catch(reject);
+          }
 
-              return resolve({
-                ...template,
-                recordId: this.lastID.toString(),
-              });
-            }
-          );
+          return update(template).then(resolve).catch(reject);
         });
       });
     },

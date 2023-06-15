@@ -4,11 +4,6 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Button from "@mui/lab/LoadingButton";
 import { useTheme } from "@mui/material/styles";
 
@@ -16,6 +11,7 @@ interface Props {
   open: boolean;
   template?: Template;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 const defaultHtml = `<!doctype html>
@@ -35,7 +31,12 @@ const errors: Record<string, string> = {
   generic: "Something went wrong while submitting the form.",
 };
 
-export default function TemplateDialog({ open, template, onClose }: Props) {
+export default function TemplateDialog({
+  open,
+  template,
+  onClose,
+  onSuccess,
+}: Props) {
   const theme = useTheme();
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -109,14 +110,18 @@ export default function TemplateDialog({ open, template, onClose }: Props) {
     setIsLoading(true);
 
     fetch("/api/template", {
-      method: "POST",
+      method: template ? "PATCH" : "POST",
       body: JSON.stringify({
+        recordId: template?.recordId,
         templateName: templateName?.trim(),
         templateHtml: templateHtml?.trim(),
         templateDesc: templateDesc?.trim(),
         templateSubject: templateSubj?.trim(),
       }),
     })
+      .then(() => {
+        onSuccess();
+      })
       .catch(() => {
         setFormErrors({ generic: errors.generic });
       })
