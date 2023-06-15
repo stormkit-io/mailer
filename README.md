@@ -26,6 +26,23 @@ Send automated emails, or launch campaigns through a simple API or an intuitive 
 
 ☑️ Incomplete or not yet started
 
+## Configuration
+
+The Mailer is configured through environment variables. You can configure these
+variables either by providing an `.env` file or by making these variables available
+to your process.
+
+| Variable | Description | 
+| -------- | ----------- |
+| ADMIN_USERNAME   | The user name that is used to login the Mailer app. |
+| ADMIN_PASSWORD   | The password that is used to login the Mailer app. |
+| SMTP_USERNAME    | The user name that is used to login your SMTP provider. | 
+| SMTP_PASSWORD    | The password that is used to login your SMTP provider. |
+| JWT_SECRET       | A random string that is used to encrypt your JWT tokens. |
+| MAILER_FROM_ADDR | The address that will be used to send emails. | 
+
+Note that some of these variables will be moved to the configuration page once the page is implemented. See https://github.com/stormkit-io/mailer/issues/2 for more details.
+
 ## Local development
 
 ```bash
