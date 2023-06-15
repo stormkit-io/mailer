@@ -39,6 +39,7 @@ const store: SqliteStore = {
         db.serialize(() => {
           db.all<Template>(
             `SELECT
+                rowid as recordId,
                 template_name as name,
                 template_html as html,
                 template_desc as description,
@@ -53,11 +54,7 @@ const store: SqliteStore = {
                 return reject(error);
               }
 
-              resolve(
-                rows.map((row) => {
-                  return row;
-                })
-              );
+              resolve(rows);
             }
           );
         });
@@ -116,7 +113,6 @@ const store: SqliteStore = {
             },
             function (this: RunResult, err: Error | null) {
               if (err) {
-                console.log("ERROR", err);
                 return reject(err);
               }
 

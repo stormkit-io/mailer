@@ -7,8 +7,9 @@ export default async (_: http.IncomingMessage, res: http.ServerResponse) => {
   const store = await db();
   let templates = await store.templates.list();
 
+  // Store the default template
   if (!templates?.length) {
-    templates = [defaultTemplate];
+    templates = [await store.templates.store(defaultTemplate)];
   }
 
   hu.send(res, {

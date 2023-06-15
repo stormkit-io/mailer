@@ -1,6 +1,5 @@
 // Template from: https://github.com/leemunroe/responsive-html-email-template/blob/master/email.html
 const template: Template = {
-  recordId: "default",
   name: "Standard Template",
   description: "Default template that will be used to send emails.",
   isDefault: true,
