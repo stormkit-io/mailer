@@ -12,11 +12,12 @@ import Switch from "@mui/material/Switch";
 import Paper from "@mui/material/Paper";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import LinearProgress from "@mui/material/LinearProgress";
 import TemplateDialog from "~/components/TemplateDialog";
 import { useFetchTemplates } from "./templates.actions";
 
 export default function Templates() {
-  const { templates } = useFetchTemplates();
+  const { templates, isLoading } = useFetchTemplates();
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [editTemplate, setEditTemplate] = useState<Template>();
 
@@ -85,6 +86,8 @@ export default function Templates() {
             </TableBody>
           </Table>
         </TableContainer>
+      ) : isLoading ? (
+        <LinearProgress />
       ) : (
         <Alert color="warning">
           <AlertTitle>You do not have any templates</AlertTitle>
