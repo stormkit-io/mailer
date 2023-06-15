@@ -52,6 +52,8 @@ $ npm install
 $ npm run dev
 ```
 
+Create an `.env` file on the root level of the repository and configure the environment variables mentioned in the [Configuration](#configuration) section.
+
 ✅ HMR enabled
 
 ✅ To force restarting the server, type `rs` and hit Enter on the terminal
