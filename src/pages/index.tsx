@@ -1,5 +1,5 @@
+import type * as SqrlType from "squirrelly";
 import { useEffect, useMemo, useState } from "react";
-import * as Sqrt from "squirrelly";
 import Box from "@mui/material/Box";
 import Button from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
@@ -12,6 +12,8 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import TemplatePreview from "~/components/TemplatePreview";
 import { useFetchTemplates } from "./templates.actions";
+
+declare var Sqrl: typeof SqrlType;
 
 const errors: Record<string, string> = {
   to: "Empty or invalid 'to' field. Provide an email address to send the test email.",
@@ -32,7 +34,7 @@ const Home: React.FC = () => {
       vars[key] = vars[key].replace(/\n/g, "<br/>");
     });
 
-    return Sqrt.render(selectedTemplate?.html || "", vars);
+    return Sqrl.render(selectedTemplate?.html || "", vars);
   }, [templateVars]);
 
   useEffect(() => {

@@ -16,7 +16,7 @@ export default function TemplatePreview({ children }: Props) {
       sx={{ border: "none", width: "100%", height: "100%" }}
       ref={setContentRef}
     >
-      {mountNode && createPortal(children, mountNode)}
+      {mountNode ? <div>{createPortal(children, mountNode)}</div> : ""}
     </Box>
   );
 }
