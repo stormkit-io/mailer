@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import * as Sqrt from "squirrelly";
 import Box from "@mui/material/Box";
 import Button from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
@@ -9,6 +10,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import TemplatePreview from "~/components/TemplatePreview";
 import { useFetchTemplates } from "./templates.actions";
 
 const errors: Record<string, string> = {
@@ -22,10 +24,26 @@ const Home: React.FC = () => {
   const [subject, setSubject] = useState<string>("");
   const { templates } = useFetchTemplates();
   const [selectedTemplate, setSelectedTemplate] = useState<Template>();
+  const [templateVars, setTemplateVars] = useState<Record<string, string>>({});
+  const templateHtml = useMemo(() => {
+    const vars = { ...templateVars };
+
+    Object.keys(vars).forEach((key) => {
+      vars[key] = vars[key].replace(/\n/g, "<br/>");
+    });
+
+    return Sqrt.render(selectedTemplate?.html || "", vars);
+  }, [templateVars]);
 
   useEffect(() => {
     if (templates?.length > 0) {
       setSelectedTemplate(templates[0]);
+      setTemplateVars(
+        templates[0].variables?.reduce((obj, key) => {
+          obj[key] = key;
+          return obj;
+        }, {} as Record<string, string>) || {}
+      );
     }
   }, [templates]);
 
@@ -75,156 +93,181 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Box
-      color="info.main"
-      maxWidth="md"
-      sx={{
-        m: "auto",
-        width: "100%",
-        p: 4,
-        bgcolor: "rgba(0,0,0,0.05)",
-        boxShadow: 1,
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{ mb: 3, opacity: 0.5, textAlign: "center" }}
-      >
-        Send Email Manually
-      </Typography>
-      <form
-        id="manual-email-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendTestEmail();
+    <Box sx={{ m: 2, display: "flex", width: "100%" }}>
+      <Box
+        color="info.main"
+        sx={{
+          flex: 1,
+          p: 4,
+          bgcolor: "rgba(0,0,0,0.05)",
+          boxShadow: 1,
         }}
       >
         <Typography
-          sx={{
-            bgcolor: "rgba(0,0,0,0.05)",
-            borderBottom: "1px solid rgba(0,0,0,0.3)",
-            py: 1,
-            px: 1.5,
-            cursor: "not-allowed",
+          variant="h6"
+          sx={{ mb: 3, opacity: 0.5, textAlign: "center" }}
+        >
+          Send Email Manually
+        </Typography>
+        <form
+          id="manual-email-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendTestEmail();
           }}
         >
           <Typography
-            sx={{ fontSize: 12, mb: 0.25, display: "block", opacity: 0.4 }}
-            component="span"
-          >
-            From
-          </Typography>{" "}
-          {process.env.MAILER_FROM_ADDR}
-        </Typography>
-        <Box
-          sx={{
-            pt: 2,
-            mb: 2,
-          }}
-        >
-          <TextField
-            color="primary"
-            variant="filled"
-            label="To"
-            value={toAddr}
-            error={errors.to === error}
-            autoComplete="off"
-            autoFocus
-            placeholder="janny@doe.com; joe@doe.com"
-            InputProps={{ id: "to-field" }}
-            onChange={(e) => setToAddr(e.currentTarget.value)}
-            fullWidth
-          />
-        </Box>
-        <Box
-          sx={{
-            mb: 2,
-          }}
-        >
-          <TextField
-            color="primary"
-            variant="filled"
-            label="Subject"
-            value={subject}
-            autoComplete="off"
-            autoFocus
-            placeholder={
-              selectedTemplate?.defaultSubject || "Subject of the email"
-            }
-            onChange={(e) => setSubject(e.currentTarget.value)}
-            fullWidth
-          />
-        </Box>
-        <FormControl
-          variant="filled"
-          fullWidth
-          sx={{ mb: selectedTemplate?.variables ? 0 : 2 }}
-        >
-          <InputLabel
-            id="template-select"
-            sx={{ color: "white", opacity: 0.4 }}
-            color="info"
-          >
-            Template
-          </InputLabel>
-          <Select
-            labelId="template-select"
-            sx={{ color: "white" }}
-            value={selectedTemplate?.recordId || ""}
-            onChange={(e) => {
-              setSelectedTemplate(
-                templates.find((t) => t.recordId === e.target.value)
-              );
+            sx={{
+              bgcolor: "rgba(0,0,0,0.05)",
+              borderBottom: "1px solid rgba(0,0,0,0.3)",
+              py: 1,
+              px: 1.5,
+              cursor: "not-allowed",
             }}
           >
-            {templates?.map((template) => (
-              <MenuItem key={template.recordId} value={template.recordId}>
-                {template.name} (#{template.recordId})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {selectedTemplate?.variables ? (
-          <Box>
             <Typography
-              variant="h6"
-              sx={{ mb: 2, mt: 3, opacity: 0.5, textAlign: "center" }}
+              sx={{ fontSize: 12, mb: 0.25, display: "block", opacity: 0.4 }}
+              component="span"
             >
-              Template Variables
-            </Typography>
-            {selectedTemplate.variables.map((variable) => (
-              <TextField
-                key={variable}
-                multiline
-                fullWidth
-                variant="filled"
-                sx={{ mb: 2 }}
-                label={`it.${variable}`}
-                color="primary"
-                name={`data[${variable}]`}
-              />
-            ))}
-          </Box>
-        ) : (
-          ""
-        )}
-        {error && (
-          <Alert color="error" sx={{ mb: 2 }}>
-            <AlertTitle>Invalid test address</AlertTitle>
-            <Typography>{error}</Typography>
-          </Alert>
-        )}
-        <Box sx={{ textAlign: "center" }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            loading={isLoading}
-            type="submit"
+              From
+            </Typography>{" "}
+            {process.env.MAILER_FROM_ADDR}
+          </Typography>
+          <Box
+            sx={{
+              pt: 2,
+              mb: 2,
+            }}
           >
-            Send email
-          </Button>
-        </Box>
-      </form>
+            <TextField
+              color="primary"
+              variant="filled"
+              label="To"
+              value={toAddr}
+              error={errors.to === error}
+              autoComplete="off"
+              autoFocus
+              placeholder="janny@doe.com; joe@doe.com"
+              InputProps={{ id: "to-field" }}
+              onChange={(e) => setToAddr(e.currentTarget.value)}
+              fullWidth
+            />
+          </Box>
+          <Box
+            sx={{
+              mb: 2,
+            }}
+          >
+            <TextField
+              color="primary"
+              variant="filled"
+              label="Subject"
+              value={subject}
+              autoComplete="off"
+              placeholder={
+                selectedTemplate?.defaultSubject || "Subject of the email"
+              }
+              onChange={(e) => setSubject(e.currentTarget.value)}
+              fullWidth
+            />
+          </Box>
+          <FormControl
+            variant="filled"
+            fullWidth
+            sx={{ mb: selectedTemplate?.variables ? 0 : 2 }}
+          >
+            <InputLabel
+              id="template-select"
+              sx={{ color: "white", opacity: 0.4 }}
+              color="info"
+            >
+              Template
+            </InputLabel>
+            <Select
+              labelId="template-select"
+              sx={{ color: "white" }}
+              value={selectedTemplate?.recordId || ""}
+              onChange={(e) => {
+                setSelectedTemplate(
+                  templates.find((t) => t.recordId === e.target.value)
+                );
+              }}
+            >
+              {templates?.map((template) => (
+                <MenuItem key={template.recordId} value={template.recordId}>
+                  {template.name} (#{template.recordId})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {selectedTemplate?.variables ? (
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, mt: 3, opacity: 0.5, textAlign: "center" }}
+              >
+                Template Variables
+              </Typography>
+              {selectedTemplate.variables.map((variable) => (
+                <TextField
+                  key={variable}
+                  multiline
+                  fullWidth
+                  value={templateVars[variable] || ""}
+                  variant="filled"
+                  sx={{ mb: 2 }}
+                  label={`it.${variable}`}
+                  color="primary"
+                  name={`data[${variable}]`}
+                  onChange={(e) => {
+                    setTemplateVars({
+                      ...templateVars,
+                      [variable]: e.target.value,
+                    });
+                  }}
+                />
+              ))}
+            </Box>
+          ) : (
+            ""
+          )}
+          {error && (
+            <Alert color="error" sx={{ mb: 2 }}>
+              <AlertTitle>Invalid test address</AlertTitle>
+              <Typography>{error}</Typography>
+            </Alert>
+          )}
+          <Box sx={{ textAlign: "center" }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              loading={isLoading}
+              type="submit"
+            >
+              Send email
+            </Button>
+          </Box>
+        </form>
+      </Box>
+      <Box
+        sx={{
+          bgcolor: "rgba(0,0,0,0.05)",
+          flex: 1,
+          height: "100%",
+          width: "100%",
+          ml: 2,
+          fontFamily: "monospace",
+          boxShadow: 1,
+        }}
+      >
+        <TemplatePreview>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: templateHtml,
+            }}
+          ></div>
+        </TemplatePreview>
+      </Box>
     </Box>
   );
 };
