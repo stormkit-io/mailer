@@ -8,6 +8,8 @@ import { build } from "vite";
 dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+console.log(process.env);
+
 const files = glob
   .sync("src/api/**/*.ts")
   // Filter out private files
