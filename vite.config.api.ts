@@ -30,11 +30,7 @@ const files = glob
           .filter(
             (dirent) =>
               // Filter out if the directory does not start with a dot
-              dirent.isDirectory() &&
-              !dirent.name.startsWith(".") &&
-              // sqlite3 is using aws-sdk which increases the bundle significantly
-              // since it's designed for local development, ignore this.
-              ["sqlite3"].indexOf(dirent.name) === -1
+              dirent.isDirectory() && !dirent.name.startsWith(".")
           )
           .map((dirent) => new RegExp(dirent.name)),
       },
@@ -45,11 +41,16 @@ const files = glob
             find: /^~/,
             replacement: path.resolve(__dirname, "src"),
           },
+          // See https://github.com/mapbox/node-pre-gyp/issues/661
+          // for more details.
           {
-            find: /^sqlite3$/,
+            find: /\.\/sqlite3/,
             replacement: path.resolve(
               __dirname,
-              "node_modules/sqlite3/lib/sqlite3.js"
+              "src",
+              "api",
+              "_db",
+              "mock-sqlite3.ts"
             ),
           },
         ],
