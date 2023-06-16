@@ -75,7 +75,7 @@ export default function Templates() {
           <Table sx={{ minWidth: 650 }} aria-label="Templates">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ maxWidth: "100px", fontWeight: "bold" }}>
+                <TableCell sx={{ maxWidth: "120px", fontWeight: "bold" }}>
                   Template ID
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
@@ -92,7 +92,9 @@ export default function Templates() {
                   key={template.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>#{template.recordId}</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>
+                    #{template.recordId}
+                  </TableCell>
                   <TableCell>{template.name}</TableCell>
                   <TableCell>{template.description}</TableCell>
                   <TableCell align="right">

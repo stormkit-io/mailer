@@ -4,7 +4,7 @@ import ds from "@stormkit/ds";
 const store: Store = {
   templates: {
     async list() {
-      return ds.fetch<Template>("templates");
+      return ds.fetch<Template>("templates", {});
     },
 
     async byId(recordId: string) {

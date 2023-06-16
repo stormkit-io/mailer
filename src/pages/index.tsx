@@ -47,14 +47,17 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (templates?.length > 0) {
       setSelectedTemplate(templates[0]);
-      setTemplateVars(
-        templates[0].variables?.reduce((obj, key) => {
-          obj[key] = key;
-          return obj;
-        }, {} as Record<string, string>) || {}
-      );
     }
   }, [templates]);
+
+  useEffect(() => {
+    setTemplateVars(
+      selectedTemplate?.variables?.reduce((obj, key) => {
+        obj[key] = key;
+        return obj;
+      }, {} as Record<string, string>) || {}
+    );
+  }, [selectedTemplate]);
 
   const sendTestEmail = () => {
     setIsLoading(true);
@@ -202,7 +205,7 @@ const Home: React.FC = () => {
             >
               {templates?.map((template) => (
                 <MenuItem key={template.recordId} value={template.recordId}>
-                  {template.name} (#{template.recordId})
+                  {template.name} (<b>#{template.recordId}</b>)
                 </MenuItem>
               ))}
             </Select>
