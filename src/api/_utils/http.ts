@@ -1,5 +1,6 @@
 import * as http from "node:http";
 import * as jwt from "jose";
+import { StatusCodes } from "http-status-codes";
 
 function readBody<T>(req: http.IncomingMessage): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -115,7 +116,47 @@ function extractBearerToken(headers: http.IncomingHttpHeaders): string | void {
   }
 }
 
+function app(
+  handler: (req: http.IncomingMessage, res: http.ServerResponse) => void
+) {
+  return async (req: http.IncomingMessage, res: http.ServerResponse) => {
+    const method = req.method?.toUpperCase() || "GET";
+    const whiteList = ["/session", "/login"];
+    const pathname = (req.url?.split(/\?|#/)?.[0] || "").replace("/api", "");
+
+    // If DEMO mode is turned on, only allow requests to /session and /login
+    if (
+      process.env.DEMO &&
+      method !== "GET" &&
+      whiteList.indexOf(pathname) === -1
+    ) {
+      return send(res, { demo: true });
+    }
+
+    try {
+      await handler(req, res);
+    } catch (e) {
+      const internalServerErr = { status: StatusCodes.INTERNAL_SERVER_ERROR };
+
+      if (e instanceof Error) {
+        return send(res, { error: e.message }, internalServerErr);
+      }
+
+      if (e instanceof http.ServerResponse) {
+        return send(
+          res,
+          { statusCode: e.statusCode, statusMessage: e.statusMessage },
+          internalServerErr
+        );
+      }
+
+      return send(res, { error: e }, internalServerErr);
+    }
+  };
+}
+
 export default {
+  app,
   isAuthorized,
   readBody,
   send,

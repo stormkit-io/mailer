@@ -24,6 +24,7 @@ export default defineConfig({
     outDir: ".stormkit/public",
   },
   define: {
+    "process.env.DEMO": JSON.stringify(process.env.DEMO),
     "process.env.MAILER_FROM_ADDR": JSON.stringify(
       process.env.MAILER_FROM_ADDR
     ),

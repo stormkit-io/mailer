@@ -4,12 +4,17 @@ import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Typography from "@mui/material/Typography";
 import HomeIcon from "@mui/icons-material/Home";
 import Context from "~/context";
 
 interface Props {
   children: React.ReactNode;
 }
+
+const isDemo = process.env.DEMO;
 
 const menu = [
   { text: "Home", path: "/", Icon: HomeIcon },
@@ -76,7 +81,17 @@ export default function Layout({ children }: Props) {
           ))}
         </Box>
       </Box>
-      {children}
+      <Box sx={{ flex: 1, minHeight: "100vh" }}>
+        {isDemo && (
+          <Alert sx={{ m: 2 }} variant="filled" color="warning">
+            <Typography>
+              You're using the Demo version. This is a <b>read-only</b> mode.
+              Your action will not be saved.
+            </Typography>
+          </Alert>
+        )}
+        {children}
+      </Box>
     </Box>
   );
 }

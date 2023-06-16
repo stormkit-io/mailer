@@ -54,40 +54,42 @@ async function mailer(props: MailerProps) {
   }
 }
 
-export default async (req: http.IncomingMessage, res: http.ServerResponse) => {
-  const body = await hu.readBody<Body>(req);
-  const errors: Record<string, string> = {};
+export default hu.app(
+  async (req: http.IncomingMessage, res: http.ServerResponse) => {
+    const body = await hu.readBody<Body>(req);
+    const errors: Record<string, string> = {};
 
-  if (typeof body.templateId !== "string" || !body.templateId) {
-    errors["templateId"] = "The template ID should be a non-empty string.";
+    if (typeof body.templateId !== "string" || !body.templateId) {
+      errors["templateId"] = "The template ID should be a non-empty string.";
+    }
+
+    const emails = validEmails(body.email);
+
+    if (!emails.length) {
+      errors["email"] =
+        "Email should be either a valid email string or an array of valid emails.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return hu.send(res, { errors }, { status: StatusCodes.BAD_REQUEST });
+    }
+
+    try {
+      hu.send(
+        res,
+        await mailer({
+          emails,
+          templateId: body.templateId!,
+          data: body.data,
+          subject: body.subject,
+        })
+      );
+    } catch (e) {
+      hu.send(
+        res,
+        { error: (e as Error).message },
+        { status: StatusCodes.INTERNAL_SERVER_ERROR }
+      );
+    }
   }
-
-  const emails = validEmails(body.email);
-
-  if (!emails.length) {
-    errors["email"] =
-      "Email should be either a valid email string or an array of valid emails.";
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return hu.send(res, { errors }, { status: StatusCodes.BAD_REQUEST });
-  }
-
-  try {
-    hu.send(
-      res,
-      await mailer({
-        emails,
-        templateId: body.templateId!,
-        data: body.data,
-        subject: body.subject,
-      })
-    );
-  } catch (e) {
-    hu.send(
-      res,
-      { error: (e as Error).message },
-      { status: StatusCodes.INTERNAL_SERVER_ERROR }
-    );
-  }
-};
+);

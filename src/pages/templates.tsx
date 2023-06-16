@@ -45,7 +45,6 @@ export default function Templates() {
         m: "auto",
         width: "100%",
         p: 4,
-        bgcolor: "rgba(0,0,0,0.05)",
         boxShadow: 1,
       }}
     >
@@ -61,7 +60,7 @@ export default function Templates() {
           Templates
         </Typography>
         <Button
-          variant="contained"
+          variant="outlined"
           color="secondary"
           onClick={() => {
             setIsTemplateDialogOpen(true);

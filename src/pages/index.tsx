@@ -10,6 +10,10 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
 import TemplatePreview from "~/components/TemplatePreview";
 import { useFetchTemplates } from "./templates.actions";
@@ -17,7 +21,7 @@ import { useFetchTemplates } from "./templates.actions";
 declare var Sqrl: typeof SqrlType;
 
 const errors: Record<string, string> = {
-  to: "Empty or invalid 'to' field. Provide an email address to send the test email.",
+  to: "Invalid address. Make sure to provide valid email addresses.",
 };
 
 const Home: React.FC = () => {
@@ -27,6 +31,7 @@ const Home: React.FC = () => {
   const [subject, setSubject] = useState<string>("");
   const { templates } = useFetchTemplates();
   const [selectedTemplate, setSelectedTemplate] = useState<Template>();
+  const [showPreview, setShowPreview] = useState(false);
   const [templateVars, setTemplateVars] = useState<Record<string, string>>({});
   const theme = useTheme();
   const templateHtml = useMemo(() => {
@@ -97,12 +102,13 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Box sx={{ m: 2, display: "flex", width: "100%" }}>
+    <Box sx={{ m: 2, display: "flex", justifyContent: "center" }}>
       <Box
         color="info.main"
+        maxWidth="560px"
         sx={{
           flex: 1,
-          p: 4,
+          py: 2,
           pt: 0,
         }}
       >
@@ -231,13 +237,24 @@ const Home: React.FC = () => {
           )}
           {error && (
             <Alert color="error" sx={{ mb: 2 }}>
-              <AlertTitle>Invalid test address</AlertTitle>
+              <AlertTitle>Error</AlertTitle>
               <Typography>{error}</Typography>
             </Alert>
           )}
           <Box sx={{ textAlign: "center" }}>
             <Button
-              variant="contained"
+              color="info"
+              variant="outlined"
+              type="button"
+              sx={{ mr: 2, opacity: 0.5 }}
+              onClick={() => {
+                setShowPreview(true);
+              }}
+            >
+              Preview
+            </Button>
+            <Button
+              variant="outlined"
               color="secondary"
               loading={isLoading}
               type="submit"
@@ -247,25 +264,49 @@ const Home: React.FC = () => {
           </Box>
         </form>
       </Box>
-      <Box
-        sx={{
-          bgcolor: "rgba(0,0,0,0.05)",
-          flex: 1,
-          height: "100%",
-          width: "100%",
-          ml: 2,
-          fontFamily: "monospace",
-          boxShadow: 1,
+      <Dialog
+        open={showPreview}
+        PaperProps={{ sx: { bgcolor: "transparent" } }}
+        onClose={() => {
+          setShowPreview(false);
         }}
+        sx={{ m: 2 }}
+        fullScreen
       >
-        <TemplatePreview>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: templateHtml,
+        <DialogTitle
+          sx={{ bgcolor: theme.palette.primary.dark, color: "white" }}
+        >
+          <Typography>Preview</Typography>
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              setShowPreview(false);
             }}
-          ></div>
-        </TemplatePreview>
-      </Box>
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Box
+          sx={{
+            flex: 1,
+            fontFamily: "monospace",
+          }}
+        >
+          <TemplatePreview>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: templateHtml,
+              }}
+            ></div>
+          </TemplatePreview>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

@@ -199,7 +199,7 @@ export default function TemplateDialog({
             }}
           >
             <Button
-              variant="contained"
+              variant="outlined"
               color="secondary"
               loading={isLoading}
               type="submit"

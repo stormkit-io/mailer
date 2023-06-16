@@ -13,7 +13,7 @@ export default function TemplatePreview({ children }: Props) {
   return (
     <Box
       component="iframe"
-      sx={{ border: "none", width: "100%", height: "100%" }}
+      sx={{ border: "none", width: "100%", height: "100%", m: 0 }}
       ref={setContentRef}
     >
       {mountNode ? <div>{createPortal(children, mountNode)}</div> : ""}
