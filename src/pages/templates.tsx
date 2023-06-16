@@ -26,17 +26,11 @@ export default function Templates() {
   const [refreshToken, setRefreshToken] = useState(0);
   const { templates, isLoading } = useFetchTemplates({ refreshToken });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-  const [editTemplate, setEditTemplate] = useState<Template>();
+  const [editTemplate, setEditTemplate] = useState<Template>(); // Gets set after Edit is clicked
+  const [selectedTemplate, setSelectedTemplate] = useState<Template>(); // Gets set after Menu Icon is clicked
 
-  const handleMenuIconClick: React.MouseEventHandler = (event) => {
-    setAnchorEl(event.currentTarget as HTMLElement);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const isMenuOpen = Boolean(anchorEl);
 
   return (
     <Box
@@ -89,7 +83,7 @@ export default function Templates() {
             <TableBody>
               {templates.map((template) => (
                 <TableRow
-                  key={template.name}
+                  key={template.recordId}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell sx={{ fontWeight: "bold" }}>
@@ -103,39 +97,17 @@ export default function Templates() {
                   <TableCell align="right">
                     <IconButton
                       aria-label="more"
-                      id="long-button"
-                      aria-controls={open ? "long-menu" : undefined}
-                      aria-expanded={open ? "true" : undefined}
+                      id={`menu-icon-${template.recordId}`}
+                      aria-controls={isMenuOpen ? "long-menu" : undefined}
+                      aria-expanded={isMenuOpen ? "true" : undefined}
                       aria-haspopup="true"
-                      onClick={handleMenuIconClick}
+                      onClick={(e) => {
+                        setAnchorEl(e.currentTarget);
+                        setSelectedTemplate(template);
+                      }}
                     >
                       <MoreHorizIcon />
                     </IconButton>
-                    <Menu
-                      MenuListProps={{
-                        "aria-labelledby": "long-button",
-                      }}
-                      anchorEl={anchorEl}
-                      open={open}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                      }}
-                      onClose={handleClose}
-                    >
-                      <MenuItem
-                        onClick={() => {
-                          setEditTemplate(template);
-                          setIsTemplateDialogOpen(true);
-                          setAnchorEl(null);
-                        }}
-                      >
-                        <ListItemIcon>
-                          <EditIcon />
-                        </ListItemIcon>
-                        <Typography>Edit</Typography>
-                      </MenuItem>
-                    </Menu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -151,21 +123,49 @@ export default function Templates() {
         </Alert>
       )}
 
-      {(isTemplateDialogOpen || Boolean(editTemplate)) && (
-        <TemplateDialog
-          open
-          template={editTemplate}
-          onSuccess={() => {
-            setRefreshToken(Date.now());
-            setIsTemplateDialogOpen(false);
-            setEditTemplate(undefined);
+      <TemplateDialog
+        open={isTemplateDialogOpen || Boolean(editTemplate)}
+        template={editTemplate}
+        onSuccess={() => {
+          setRefreshToken(Date.now());
+          setIsTemplateDialogOpen(false);
+          setEditTemplate(undefined);
+        }}
+        onClose={() => {
+          setIsTemplateDialogOpen(false);
+          setEditTemplate(undefined);
+          setSelectedTemplate(undefined);
+        }}
+      />
+
+      <Menu
+        MenuListProps={{
+          "aria-labelledby": "long-button",
+        }}
+        open={isMenuOpen}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        onClose={() => {
+          setAnchorEl(null);
+          setSelectedTemplate(undefined);
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            setEditTemplate(selectedTemplate);
+            setIsTemplateDialogOpen(true);
+            setAnchorEl(null);
           }}
-          onClose={() => {
-            setIsTemplateDialogOpen(false);
-            setEditTemplate(undefined);
-          }}
-        />
-      )}
+        >
+          <ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          <Typography>Edit</Typography>
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }

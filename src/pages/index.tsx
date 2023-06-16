@@ -10,7 +10,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
-import Dialog from "@mui/material/Dialog";
+import Drawer from "@mui/material/Drawer";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -59,7 +59,7 @@ const Home: React.FC = () => {
     );
   }, [selectedTemplate]);
 
-  const sendTestEmail = () => {
+  const sendEmail = () => {
     setIsLoading(true);
     setError(undefined);
 
@@ -122,7 +122,6 @@ const Home: React.FC = () => {
           id="manual-email-form"
           onSubmit={(e) => {
             e.preventDefault();
-            sendTestEmail();
           }}
         >
           <Typography
@@ -246,38 +245,34 @@ const Home: React.FC = () => {
           )}
           <Box sx={{ textAlign: "center" }}>
             <Button
-              color="info"
-              variant="outlined"
-              type="button"
-              sx={{ mr: 2, opacity: 0.5 }}
-              onClick={() => {
-                setShowPreview(true);
-              }}
-            >
-              Preview
-            </Button>
-            <Button
               variant="outlined"
               color="secondary"
               loading={isLoading}
-              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowPreview(true);
+              }}
             >
-              Send email
+              Preview & Send
             </Button>
           </Box>
         </form>
       </Box>
-      <Dialog
+      <Drawer
         open={showPreview}
         PaperProps={{ sx: { bgcolor: "transparent" } }}
         onClose={() => {
           setShowPreview(false);
         }}
+        anchor="right"
         sx={{ m: 2 }}
-        fullScreen
       >
         <DialogTitle
-          sx={{ bgcolor: theme.palette.primary.dark, color: "white" }}
+          sx={{
+            bgcolor: theme.palette.primary.dark,
+            color: "white",
+            width: "600px",
+          }}
         >
           <Typography>Preview</Typography>
           <IconButton
@@ -301,7 +296,15 @@ const Home: React.FC = () => {
             fontFamily: "monospace",
           }}
         >
-          <TemplatePreview>
+          <TemplatePreview
+            isLoading={isLoading}
+            onSend={() => {
+              sendEmail();
+            }}
+            onClose={() => {
+              setShowPreview(false);
+            }}
+          >
             <div
               dangerouslySetInnerHTML={{
                 __html: templateHtml,
@@ -309,7 +312,7 @@ const Home: React.FC = () => {
             ></div>
           </TemplatePreview>
         </Box>
-      </Dialog>
+      </Drawer>
     </Box>
   );
 };

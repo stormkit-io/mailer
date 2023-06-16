@@ -1,8 +1,8 @@
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
+import Drawer from "@mui/material/Drawer";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/lab/LoadingButton";
 import { useTheme } from "@mui/material/styles";
@@ -46,6 +46,13 @@ export default function TemplateDialog({
   const [templateHtml, setTemplateHtml] = useState(
     template?.html || defaultHtml
   );
+
+  useEffect(() => {
+    setTemplateName(template?.name);
+    setTemplateDesc(template?.description);
+    setTemplateSubj(template?.defaultSubject);
+    setTemplateHtml(template?.html || defaultHtml);
+  }, [template]);
 
   const fields = [
     {
@@ -133,16 +140,17 @@ export default function TemplateDialog({
   const hasErrors = Object.keys(formErrors).length > 0;
 
   return (
-    <Dialog
+    <Drawer
       open={open}
       onClose={() => onClose()}
-      maxWidth="md"
-      fullWidth
-      sx={{ bgcolor: "rgba(0,0,0,0.5)" }}
+      anchor="right"
+      PaperProps={{ sx: { bgcolor: theme.palette.primary.dark } }}
+      sx={{ bgcolor: "rgba(0,0,0,0.9)" }}
     >
       <Box
         sx={{
-          bgcolor: theme.palette.primary.main,
+          width: "600px",
+          bgcolor: theme.palette.primary.dark,
           maxHeight: "100%",
           position: "relative",
         }}
@@ -178,7 +186,7 @@ export default function TemplateDialog({
                   autoComplete="off"
                   value={field.value || ""}
                   fullWidth
-                  rows={field.multiline ? 10 : 1}
+                  rows={field.multiline ? 20 : 1}
                   multiline={field.multiline}
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -209,6 +217,6 @@ export default function TemplateDialog({
           </Box>
         </Box>
       </Box>
-    </Dialog>
+    </Drawer>
   );
 }
