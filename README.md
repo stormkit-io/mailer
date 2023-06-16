@@ -54,6 +54,8 @@ Note that some of these variables will be moved to the configuration page once t
 
 ## Local development
 
+See [Docker](/#Docker) for containarized environments.
+
 ```bash
 $ git clone git@github.com:stormkit-io/mailer.git
 $ cd mailer
@@ -66,6 +68,21 @@ Create an `.env` file on the root level of the repository and configure the envi
 ✅ HMR enabled
 
 ✅ To force restarting the server, type `rs` and hit Enter on the terminal
+
+## Docker
+
+```bash
+$ docker build -t mailer .
+$ docker run -t mailer
+```
+
+Currently, the container does not stop when a Stop Signal is sent. See https://github.com/stormkit-io/mailer/issues/12 for more context.
+
+To stop the container, you can execute: 
+
+```bash
+$ docker stop $(docker ps -q --filter ancestor=mailer)
+```
 
 ## License
 
