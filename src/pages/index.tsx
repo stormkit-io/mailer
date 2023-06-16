@@ -120,9 +120,10 @@ const Home: React.FC = () => {
             sx={{
               bgcolor: theme.palette.primary.light,
               borderBottom: "1px solid rgba(0,0,0,0.3)",
-              pb: 1,
+              py: 1,
               px: 1.5,
               cursor: "not-allowed",
+              fontSize: 14,
             }}
           >
             <Typography

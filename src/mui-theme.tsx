@@ -45,6 +45,7 @@ export default createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
+          fontSize: 14,
           color: "white",
           opacity: 0.4,
           "&.Mui-focused": {
@@ -71,6 +72,7 @@ export default createTheme({
       styleOverrides: {
         input: {
           color: "white",
+          fontSize: 14,
         },
       },
     },
