@@ -4,10 +4,10 @@ Send automated emails, or launch campaigns through a simple API or an intuitive 
 
 ## Live Demo
 
-Visit [mailer.stormkit.dev](https://mailer.stormkit.dev). 
+Visit [https://mailer.stormkit.dev](https://mailer.stormkit.dev). 
 
-Username: root
-Password: 123456
+- Username: `root`
+- Password: `123456`
 
 It's a limited, read-only version.
 
