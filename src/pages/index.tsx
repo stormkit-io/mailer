@@ -10,6 +10,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import { useTheme } from "@mui/material/styles";
 import TemplatePreview from "~/components/TemplatePreview";
 import { useFetchTemplates } from "./templates.actions";
 
@@ -27,6 +28,7 @@ const Home: React.FC = () => {
   const { templates } = useFetchTemplates();
   const [selectedTemplate, setSelectedTemplate] = useState<Template>();
   const [templateVars, setTemplateVars] = useState<Record<string, string>>({});
+  const theme = useTheme();
   const templateHtml = useMemo(() => {
     const vars = { ...templateVars };
 
@@ -101,14 +103,10 @@ const Home: React.FC = () => {
         sx={{
           flex: 1,
           p: 4,
-          bgcolor: "rgba(0,0,0,0.05)",
-          boxShadow: 1,
+          pt: 0,
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ mb: 3, opacity: 0.5, textAlign: "center" }}
-        >
+        <Typography variant="h6" sx={{ mt: 0, mb: 3, opacity: 0.5 }}>
           Send Email Manually
         </Typography>
         <form
@@ -120,9 +118,9 @@ const Home: React.FC = () => {
         >
           <Typography
             sx={{
-              bgcolor: "rgba(0,0,0,0.05)",
+              bgcolor: theme.palette.primary.light,
               borderBottom: "1px solid rgba(0,0,0,0.3)",
-              py: 1,
+              pb: 1,
               px: 1.5,
               cursor: "not-allowed",
             }}
@@ -204,10 +202,7 @@ const Home: React.FC = () => {
           </FormControl>
           {selectedTemplate?.variables ? (
             <Box>
-              <Typography
-                variant="h6"
-                sx={{ mb: 2, mt: 3, opacity: 0.5, textAlign: "center" }}
-              >
+              <Typography variant="h6" sx={{ mb: 2, mt: 3, opacity: 0.5 }}>
                 Template Variables
               </Typography>
               {selectedTemplate.variables.map((variable) => (

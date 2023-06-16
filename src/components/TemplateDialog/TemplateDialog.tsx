@@ -142,7 +142,7 @@ export default function TemplateDialog({
     >
       <Box
         sx={{
-          bgcolor: theme.palette.primary.dark,
+          bgcolor: theme.palette.primary.main,
           maxHeight: "100%",
           position: "relative",
         }}
@@ -150,7 +150,7 @@ export default function TemplateDialog({
         <DialogTitle
           sx={{
             color: "white",
-            bgcolor: "#263d7d",
+            bgcolor: theme.palette.primary.dark,
             p: 2,
             mb: 2,
             zIndex: 2,
@@ -193,7 +193,7 @@ export default function TemplateDialog({
               textAlign: "right",
               position: "sticky",
               bottom: 0,
-              bgcolor: "#263d7d",
+              bgcolor: theme.palette.primary.dark,
               borderTop: "1px solid rgba(0,0,0,0.5)",
               p: 2,
             }}

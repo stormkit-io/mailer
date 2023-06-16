@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
+import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
@@ -18,6 +19,7 @@ const menu = [
 export default function Layout({ children }: Props) {
   const { isLoggedIn } = useContext(Context);
   const location = useLocation();
+  const theme = useTheme();
 
   if (!isLoggedIn) {
     return <>{children}</>;
@@ -31,10 +33,13 @@ export default function Layout({ children }: Props) {
         minHeight: "100vh",
       }}
     >
-      <Box component="nav" sx={{ bgcolor: "rgba(0,0,0,0.1)", color: "white" }}>
+      <Box
+        component="nav"
+        sx={{ bgcolor: theme.palette.primary.light, color: "white" }}
+      >
         <Box
           component="ul"
-          sx={{ p: 0, borderTop: "1px solid rgba(255,255,255,0.05)" }}
+          sx={{ p: 0, borderTop: "1px solid rgba(200,200,255,0.1)" }}
         >
           {menu.map((item) => (
             <Box
@@ -52,10 +57,15 @@ export default function Layout({ children }: Props) {
                   py: 2,
                   pl: 2,
                   pr: 12,
+                  opacity: 0.5,
                   bgcolor:
-                    item.path === location.pathname ? "rgba(0,0,0,0.1)" : "",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
-                  ":hover": { bgcolor: "rgba(255,255,255,0.05)" },
+                    item.path === location.pathname ? "rgba(0,0,0,0.25)" : "",
+                  borderBottom: `1px solid rgba(200,200,255,0.1)`,
+                  ":hover": {
+                    bgcolor: "rgba(200,200,255,0.01)",
+                    textDecoration: "none",
+                    opacity: 1,
+                  },
                 }}
                 href={item.path}
               >

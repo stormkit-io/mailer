@@ -45,7 +45,7 @@ const Home: React.FC = () => {
         maxWidth: "520px",
         width: "100%",
         p: 4,
-        bgcolor: "rgba(0,0,0,0.05)",
+        bgcolor: theme.palette.primary.dark,
         boxShadow: 1,
       }}
     >

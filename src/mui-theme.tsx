@@ -16,6 +16,11 @@ const LinkBehavior = React.forwardRef<
 });
 
 export default createTheme({
+  typography: {
+    h6: {
+      fontSize: "1.1rem",
+    },
+  },
   components: {
     MuiLink: {
       defaultProps: {
@@ -48,6 +53,20 @@ export default createTheme({
         },
       },
     },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          backgroundColor: "#14141b",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#14141b", // Customize the background color for TextFields
+        },
+      },
+    },
     MuiInputBase: {
       styleOverrides: {
         input: {
@@ -74,9 +93,9 @@ export default createTheme({
   },
   palette: {
     primary: {
-      main: "#3661ac", // Pastel blue
-      light: "#5ba0e4",
-      dark: "#2b448c",
+      main: "#000000",
+      light: "#14141b",
+      dark: "#0f0f0f",
     },
     secondary: {
       main: "#853295", // Pastel orange

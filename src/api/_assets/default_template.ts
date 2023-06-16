@@ -3,16 +3,16 @@ const template: Template = {
   name: "Standard Template",
   description: "Default template that will be used to send emails.",
   isDefault: true,
-  html: `<!doctype html>
+  html: `<!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Simple Transactional Email</title>
     <style>
       /* -------------------------------------
-          GLOBAL RESETS
-      ------------------------------------- */
+            GLOBAL RESETS
+        ------------------------------------- */
 
       /* All the styling goes here */
 
@@ -23,7 +23,7 @@ const template: Template = {
       }
 
       body {
-        background-color: #f6f6f6;
+        background-color: #14141b;
         font-family: sans-serif;
         -webkit-font-smoothing: antialiased;
         font-size: 14px;
@@ -32,25 +32,28 @@ const template: Template = {
         padding: 0;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
+        color: #f9f9f9;
       }
 
       table {
         border-collapse: separate;
         mso-table-lspace: 0pt;
         mso-table-rspace: 0pt;
-        width: 100%; }
-        table td {
-          font-family: sans-serif;
-          font-size: 14px;
-          vertical-align: top;
+        width: 100%;
+      }
+
+      table td {
+        font-family: sans-serif;
+        font-size: 14px;
+        vertical-align: top;
       }
 
       /* -------------------------------------
-          BODY & CONTAINER
-      ------------------------------------- */
+            BODY & CONTAINER
+        ------------------------------------- */
 
       .body {
-        background-color: #f6f6f6;
+        background-color: #14141b;
         width: 100%;
       }
 
@@ -74,11 +77,12 @@ const template: Template = {
       }
 
       /* -------------------------------------
-          HEADER, FOOTER, MAIN
-      ------------------------------------- */
+            HEADER, FOOTER, MAIN
+        ------------------------------------- */
       .main {
-        background: #ffffff;
+        background: #000000;
         border-radius: 3px;
+        margin-top: 5px;
         width: 100%;
       }
 
@@ -98,18 +102,18 @@ const template: Template = {
         text-align: center;
         width: 100%;
       }
-        .footer td,
-        .footer p,
-        .footer span,
-        .footer a {
-          color: #999999;
-          font-size: 12px;
-          text-align: center;
+      .footer td,
+      .footer p,
+      .footer span,
+      .footer a {
+        color: #999999;
+        font-size: 12px;
+        text-align: center;
       }
 
       /* -------------------------------------
-          TYPOGRAPHY
-      ------------------------------------- */
+            TYPOGRAPHY
+        ------------------------------------- */
       h1,
       h2,
       h3,
@@ -138,11 +142,11 @@ const template: Template = {
         margin: 0;
         margin-bottom: 15px;
       }
-        p li,
-        ul li,
-        ol li {
-          list-style-position: inside;
-          margin-left: 5px;
+      p li,
+      ul li,
+      ol li {
+        list-style-position: inside;
+        margin-left: 5px;
       }
 
       a {
@@ -151,35 +155,37 @@ const template: Template = {
       }
 
       /* -------------------------------------
-          BUTTONS
-      ------------------------------------- */
+            BUTTONS
+        ------------------------------------- */
       .btn {
         box-sizing: border-box;
-        width: 100%; }
-        .btn > tbody > tr > td {
-          padding-bottom: 15px; }
-        .btn table {
-          width: auto;
+        width: 100%;
       }
-        .btn table td {
-          background-color: #ffffff;
-          border-radius: 5px;
-          text-align: center;
+      .btn > tbody > tr > td {
+        padding-bottom: 15px;
       }
-        .btn a {
-          background-color: #ffffff;
-          border: solid 1px #3498db;
-          border-radius: 5px;
-          box-sizing: border-box;
-          color: #3498db;
-          cursor: pointer;
-          display: inline-block;
-          font-size: 14px;
-          font-weight: bold;
-          margin: 0;
-          padding: 12px 25px;
-          text-decoration: none;
-          text-transform: capitalize;
+      .btn table {
+        width: auto;
+      }
+      .btn table td {
+        background-color: #ffffff;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .btn a {
+        background-color: #ffffff;
+        border: solid 1px #3498db;
+        border-radius: 5px;
+        box-sizing: border-box;
+        color: #3498db;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0;
+        padding: 12px 25px;
+        text-decoration: none;
+        text-transform: capitalize;
       }
 
       .btn-primary table td {
@@ -193,8 +199,8 @@ const template: Template = {
       }
 
       /* -------------------------------------
-          OTHER STYLES THAT MIGHT BE USEFUL
-      ------------------------------------- */
+            OTHER STYLES THAT MIGHT BE USEFUL
+        ------------------------------------- */
       .last {
         margin-bottom: 0;
       }
@@ -247,8 +253,8 @@ const template: Template = {
       }
 
       /* -------------------------------------
-        RESPONSIVE AND MOBILE FRIENDLY STYLES
-      ------------------------------------- */
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+        ------------------------------------- */
 
       @media only screen and (max-width: 620px) {
         table.body h1 {
@@ -293,8 +299,8 @@ const template: Template = {
       }
 
       /* -------------------------------------
-          PRESERVE THESE STYLES IN THE HEAD
-      ------------------------------------- */
+            PRESERVE THESE STYLES IN THE HEAD
+        ------------------------------------- */
 
       @media all {
         .ExternalClass {
@@ -336,9 +342,15 @@ const template: Template = {
   </head>
   <body>
     {{ @if (it.preheader) }}
-        <span class="preheader">{{ it.preheader }}</span>
+    <span class="preheader">{{ it.preheader }}</span>
     {{ /if }}
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      class="body"
+    >
       <tr>
         <td>&nbsp;</td>
         <td class="container">
@@ -346,28 +358,48 @@ const template: Template = {
             <table role="presentation" class="main">
               <tr>
                 <td class="wrapper">
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                  <table
+                    role="presentation"
+                    border="0"
+                    cellpadding="0"
+                    cellspacing="0"
+                  >
                     <tr>
                       <td>
-                        {{ it.content | safe }}
-                        {{ @if (it.callToActionText && it.callToActionHref) }}
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
-                            <tbody>
-                                <tr>
-                                <td align="left">
-                                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ it.callToActionHref }}" target="_blank">{{ it.callToActionText }}</a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                                </tr>
-                            </tbody>
-                            </table>
+                        {{ it.content | safe }} {{ @if (it.callToActionText &&
+                        it.callToActionHref) }}
+                        <table
+                          role="presentation"
+                          border="0"
+                          cellpadding="0"
+                          cellspacing="0"
+                          class="btn btn-primary"
+                        >
+                          <tbody>
+                            <tr>
+                              <td align="left">
+                                <table
+                                  role="presentation"
+                                  border="0"
+                                  cellpadding="0"
+                                  cellspacing="0"
+                                >
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        <a
+                                          href="{{ it.callToActionHref }}"
+                                          target="_blank"
+                                          >{{ it.callToActionText }}</a
+                                        >
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                         {{ /if }}
                       </td>
                     </tr>
@@ -377,16 +409,20 @@ const template: Template = {
             </table>
 
             <div class="footer">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <table
+                role="presentation"
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+              >
                 <tr>
                   <td class="content-block">
-                    <span class="apple-link">Company Inc, 3 Abbey Road, San Francisco CA 94102</span>
-                    <br> Don't like these emails? <a href="{{ it.unsubscribeUrl }}">Unsubscribe</a>.
+                    Don't like these emails?
+                    <a href="{{ it.unsubscribeUrl }}">Unsubscribe</a>.
                   </td>
                 </tr>
               </table>
             </div>
-
           </div>
         </td>
         <td>&nbsp;</td>
