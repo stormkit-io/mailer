@@ -2,6 +2,15 @@
 
 Send automated emails, or launch campaigns through a simple API or an intuitive UI.
 
+## Live Demo
+
+Visit [mailer.stormkit.dev](https://mailer.stormkit.dev). 
+
+Username: root
+Password: 123456
+
+It's a limited, read-only version.
+
 ## Features
 
 ☑️ &nbsp;**SES Mailer:** Send emails through your own Amazon SES account.
