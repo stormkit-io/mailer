@@ -15,25 +15,31 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
+import Prompt from "~/components/Prompt";
 import TemplatePreview from "~/components/TemplatePreview";
 import { useFetchTemplates } from "./templates.actions";
+import { errors, validateEmails, sendEmail } from "./index.actions";
 
 declare var Sqrl: typeof SqrlType;
-
-const errors: Record<string, string> = {
-  to: "Invalid address. Make sure to provide valid email addresses.",
-};
 
 const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [toAddr, setToAddr] = useState("");
   const [error, setError] = useState<string>();
   const [subject, setSubject] = useState<string>("");
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [testEmails, setTestEmails] = useState<string[]>();
+  const [success, setSuccess] = useState<string>();
   const { templates } = useFetchTemplates();
   const [selectedTemplate, setSelectedTemplate] = useState<Template>();
   const [showPreview, setShowPreview] = useState(false);
   const [templateVars, setTemplateVars] = useState<Record<string, string>>({});
   const theme = useTheme();
+
+  const targetEmails = useMemo(() => {
+    return toAddr.split(";").map((e) => e.trim());
+  }, [toAddr]);
+
   const templateHtml = useMemo(() => {
     const vars = { ...templateVars };
 
@@ -58,51 +64,6 @@ const Home: React.FC = () => {
       }, {} as Record<string, string>) || {}
     );
   }, [selectedTemplate]);
-
-  const sendEmail = () => {
-    setIsLoading(true);
-    setError(undefined);
-
-    if (!toAddr || toAddr.indexOf("@") === -1) {
-      setIsLoading(false);
-      setError(errors.to);
-
-      const inputField = document.querySelector(
-        "#to-field"
-      ) as HTMLInputElement;
-
-      return inputField?.focus();
-    }
-
-    const data: Record<string, string> = {};
-    const form = document.querySelector(
-      "#manual-email-form"
-    ) as HTMLFormElement;
-
-    selectedTemplate?.variables?.forEach((variable) => {
-      const { value } = form[`data[${variable}]`] || {};
-
-      if (value) {
-        data[variable] = value.replace(/\n/g, "<br/>");
-      }
-    });
-
-    fetch("/api/mail", {
-      method: "POST",
-      body: JSON.stringify({
-        email: toAddr.split(";").map((e) => e.trim()),
-        templateId: selectedTemplate?.recordId,
-        data,
-        subject,
-      }),
-    })
-      .then(async (res) => {
-        console.log(await res.json());
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
 
   return (
     <Box sx={{ m: 2, display: "flex", justifyContent: "center" }}>
@@ -243,6 +204,12 @@ const Home: React.FC = () => {
               <Typography>{error}</Typography>
             </Alert>
           )}
+          {success && (
+            <Alert color="success" sx={{ mb: 2 }}>
+              <AlertTitle>Success</AlertTitle>
+              <Typography>{success}</Typography>
+            </Alert>
+          )}
           <Box sx={{ textAlign: "center" }}>
             <Button
               variant="outlined"
@@ -250,7 +217,14 @@ const Home: React.FC = () => {
               loading={isLoading}
               onClick={(e) => {
                 e.preventDefault();
-                setShowPreview(true);
+
+                if (validateEmails(targetEmails)) {
+                  setSuccess(undefined);
+                  setError(undefined);
+                  setShowPreview(true);
+                } else {
+                  setError(errors.to);
+                }
               }}
             >
               Preview & Send
@@ -258,6 +232,40 @@ const Home: React.FC = () => {
           </Box>
         </form>
       </Box>
+      <Prompt
+        open={Boolean(showPrompt)}
+        isLoading={isLoading}
+        message={
+          <>
+            The email will be sent to the following address(es):{" "}
+            {testEmails?.join("; ") || targetEmails.join("; ")}
+          </>
+        }
+        onConfirm={() => {
+          sendEmail({
+            subject,
+            emails: testEmails || targetEmails,
+            template: selectedTemplate!,
+            setIsLoading,
+            onSuccess: (data) => {
+              setShowPrompt(false);
+
+              if (!testEmails?.length) {
+                setShowPreview(false);
+              }
+
+              if (data.demo) {
+                setSuccess("This is a Demo version. Your email was not sent.");
+              } else {
+                setSuccess("Your email has been sent successfully.");
+              }
+            },
+          });
+        }}
+        onCancel={() => {
+          setShowPrompt(false);
+        }}
+      />
       <Drawer
         open={showPreview}
         PaperProps={{ sx: { bgcolor: "transparent" } }}
@@ -297,9 +305,10 @@ const Home: React.FC = () => {
           }}
         >
           <TemplatePreview
-            isLoading={isLoading}
-            onSend={() => {
-              sendEmail();
+            isOpen={showPreview}
+            onSend={(emails) => {
+              setTestEmails(emails);
+              setShowPrompt(true);
             }}
             onClose={() => {
               setShowPreview(false);
