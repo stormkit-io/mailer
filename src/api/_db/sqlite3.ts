@@ -172,6 +172,24 @@ const store: SqliteStore = {
         });
       });
     },
+
+    removeById(id: string) {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          return db.run(
+            `DELETE FROM templates WHERE rowid = $recordId`,
+            { $recordId: Number(id) },
+            function (this: RunResult, err: Error | null) {
+              if (err) {
+                return reject(err);
+              }
+
+              return resolve({ ok: true });
+            }
+          );
+        });
+      });
+    },
   },
 };
 

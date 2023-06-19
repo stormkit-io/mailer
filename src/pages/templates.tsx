@@ -19,15 +19,18 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditIcon from "@mui/icons-material/Edit";
+import TrashIcon from "@mui/icons-material/Delete";
 import TemplateDialog from "~/components/TemplateDialog";
-import { useFetchTemplates } from "./templates.actions";
+import Prompt from "~/components/Prompt";
+import { useFetchTemplates, deleteTemplate } from "./templates.actions";
 
 export default function Templates() {
   const [refreshToken, setRefreshToken] = useState(0);
   const { templates, isLoading } = useFetchTemplates({ refreshToken });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isDeletingTemplate, setIsDeletingTemplate] = useState(false);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-  const [editTemplate, setEditTemplate] = useState<Template>(); // Gets set after Edit is clicked
+  const [isDeletePromptOpen, setIsDeletePromptOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template>(); // Gets set after Menu Icon is clicked
 
   const isMenuOpen = Boolean(anchorEl);
@@ -58,7 +61,7 @@ export default function Templates() {
           color="secondary"
           onClick={() => {
             setIsTemplateDialogOpen(true);
-            setEditTemplate(undefined);
+            setSelectedTemplate(undefined);
           }}
         >
           New Template
@@ -92,7 +95,7 @@ export default function Templates() {
                   <TableCell>{template.name}</TableCell>
                   <TableCell>{template.description}</TableCell>
                   <TableCell align="right">
-                    <Switch checked={template.isDefault} />
+                    <Switch checked={Boolean(template.isDefault)} />
                   </TableCell>
                   <TableCell align="right">
                     <IconButton
@@ -124,16 +127,15 @@ export default function Templates() {
       )}
 
       <TemplateDialog
-        open={isTemplateDialogOpen || Boolean(editTemplate)}
-        template={editTemplate}
+        open={isTemplateDialogOpen}
+        template={selectedTemplate}
         onSuccess={() => {
           setRefreshToken(Date.now());
           setIsTemplateDialogOpen(false);
-          setEditTemplate(undefined);
+          setSelectedTemplate(undefined);
         }}
         onClose={() => {
           setIsTemplateDialogOpen(false);
-          setEditTemplate(undefined);
           setSelectedTemplate(undefined);
         }}
       />
@@ -155,7 +157,6 @@ export default function Templates() {
       >
         <MenuItem
           onClick={() => {
-            setEditTemplate(selectedTemplate);
             setIsTemplateDialogOpen(true);
             setAnchorEl(null);
           }}
@@ -165,7 +166,45 @@ export default function Templates() {
           </ListItemIcon>
           <Typography>Edit</Typography>
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setIsDeletePromptOpen(true);
+            setAnchorEl(null);
+          }}
+        >
+          <ListItemIcon>
+            <TrashIcon />
+          </ListItemIcon>
+          <Typography>Delete</Typography>
+        </MenuItem>
       </Menu>
+      <Prompt
+        open={isDeletePromptOpen}
+        isLoading={isDeletingTemplate}
+        onCancel={() => {
+          setIsDeletePromptOpen(false);
+          setSelectedTemplate(undefined);
+        }}
+        onConfirm={() => {
+          setIsDeletingTemplate(true);
+          deleteTemplate({ recordId: selectedTemplate?.recordId! })
+            .then((data) => {
+              if (data.ok) {
+                setIsDeletePromptOpen(false);
+                setRefreshToken(Date.now());
+              }
+            })
+            .finally(() => {
+              setIsDeletingTemplate(false);
+            });
+        }}
+        message={
+          <Box component="span" sx={{ display: "block" }}>
+            This will delete the <b>{selectedTemplate?.name}</b> template. Do
+            you want to proceed?
+          </Box>
+        }
+      />
     </Box>
   );
 }

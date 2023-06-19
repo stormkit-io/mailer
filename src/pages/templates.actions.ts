@@ -25,3 +25,16 @@ export function useFetchTemplates({ refreshToken }: FetchTemplatesProps = {}) {
 
   return { templates, isLoading, error };
 }
+
+interface DeleteTemplateProps {
+  recordId: string;
+}
+
+export function deleteTemplate({ recordId }: DeleteTemplateProps) {
+  return fetch("/api/template", {
+    method: "DELETE",
+    body: JSON.stringify({ recordId }),
+  }).then(async (res) => {
+    return await res.json();
+  });
+}

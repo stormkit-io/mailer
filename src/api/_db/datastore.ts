@@ -19,6 +19,10 @@ const store: Store = {
       template.recordId = result.recordIds?.[0];
       return template;
     },
+
+    async removeById(recordId: string) {
+      return await ds.removeByRecordId(recordId);
+    },
   },
 };
 
