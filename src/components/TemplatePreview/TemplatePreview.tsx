@@ -13,6 +13,8 @@ interface Props {
   children: React.ReactNode;
   onSend: (emails?: string[]) => void;
   onClose: () => void;
+  success?: string;
+  error?: string;
   isLoading?: boolean;
   isOpen: boolean;
 }
@@ -23,6 +25,8 @@ export default function TemplatePreview({
   isOpen,
   onSend,
   onClose,
+  error: errorMessage,
+  success: successMessage,
 }: Props) {
   const theme = useTheme();
   const [error, setError] = useState<string>();
@@ -115,10 +119,16 @@ export default function TemplatePreview({
           }}
         />
       </Box>
-      {error && (
+      {(error || errorMessage) && (
         <Alert sx={{ mx: 2, mb: 2 }} color="error">
           <AlertTitle>Error</AlertTitle>
-          {error}
+          {error || errorMessage}
+        </Alert>
+      )}
+      {successMessage && (
+        <Alert sx={{ mx: 2, mb: 2 }} color="success">
+          <AlertTitle>Success</AlertTitle>
+          {successMessage}
         </Alert>
       )}
       <Box

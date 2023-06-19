@@ -10,13 +10,9 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
-import Drawer from "@mui/material/Drawer";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
 import Prompt from "~/components/Prompt";
-import TemplatePreview from "~/components/TemplatePreview";
+import TemplatePreviewDrawer from "~/components/TemplatePreviewDrawer";
 import { useFetchTemplates } from "./templates.actions";
 import { errors, validateEmails, sendEmail } from "./index.actions";
 
@@ -198,13 +194,13 @@ const Home: React.FC = () => {
           ) : (
             ""
           )}
-          {error && (
+          {!testEmails && error && (
             <Alert color="error" sx={{ mb: 2 }}>
               <AlertTitle>Error</AlertTitle>
               <Typography>{error}</Typography>
             </Alert>
           )}
-          {success && (
+          {!testEmails && success && (
             <Alert color="success" sx={{ mb: 2 }}>
               <AlertTitle>Success</AlertTitle>
               <Typography>{success}</Typography>
@@ -256,6 +252,8 @@ const Home: React.FC = () => {
 
               if (data.demo) {
                 setSuccess("This is a Demo version. Your email was not sent.");
+              } else if (testEmails) {
+                setSuccess("Your test email has been sent successfully.");
               } else {
                 setSuccess("Your email has been sent successfully.");
               }
@@ -266,62 +264,21 @@ const Home: React.FC = () => {
           setShowPrompt(false);
         }}
       />
-      <Drawer
-        open={showPreview}
-        PaperProps={{ sx: { bgcolor: "transparent" } }}
+      <TemplatePreviewDrawer
+        isOpen={showPreview}
+        html={templateHtml}
+        error={testEmails ? error : undefined}
+        success={testEmails ? success : undefined}
+        onSend={(emails) => {
+          setTestEmails(emails);
+          setShowPrompt(true);
+          setSuccess(undefined);
+          setError(undefined);
+        }}
         onClose={() => {
           setShowPreview(false);
         }}
-        anchor="right"
-        sx={{ m: 2 }}
-      >
-        <DialogTitle
-          sx={{
-            bgcolor: theme.palette.primary.dark,
-            color: "white",
-            width: "600px",
-          }}
-        >
-          <Typography>Preview</Typography>
-          <IconButton
-            aria-label="close"
-            onClick={() => {
-              setShowPreview(false);
-            }}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <Box
-          sx={{
-            flex: 1,
-            fontFamily: "monospace",
-          }}
-        >
-          <TemplatePreview
-            isOpen={showPreview}
-            onSend={(emails) => {
-              setTestEmails(emails);
-              setShowPrompt(true);
-            }}
-            onClose={() => {
-              setShowPreview(false);
-            }}
-          >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: templateHtml,
-              }}
-            ></div>
-          </TemplatePreview>
-        </Box>
-      </Drawer>
+      />
     </Box>
   );
 };
