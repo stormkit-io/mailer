@@ -1,0 +1,7 @@
+[
+  {
+    "from": "/*",
+    "to": "/index.html",
+    "assets": false
+  }
+]
