@@ -44,6 +44,14 @@ interface SendArgs {
   statusMessage?: string;
 }
 
+const statusMessages: Record<string, string> = {
+  [StatusCodes.OK]: "Success",
+  [StatusCodes.BAD_REQUEST]: "Bad Request",
+  [StatusCodes.UNAUTHORIZED]: "Unauthorized",
+  [StatusCodes.FORBIDDEN]: "Forbidden",
+  [StatusCodes.CREATED]: "Created",
+};
+
 function send(
   res: http.ServerResponse,
   content?: Object | string,
@@ -52,7 +60,8 @@ function send(
   args = args || {};
   args.status = args.status || 200;
   args.headers = args.headers || { "content-type": "application/json" };
-  args.statusMessage = args.statusMessage || "Success";
+  args.statusMessage =
+    args.statusMessage || statusMessages[args.status] || "Success";
 
   content = typeof content === "object" ? JSON.stringify(content) : content;
 
