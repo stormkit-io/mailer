@@ -24,6 +24,17 @@ const store: Store = {
       return await ds.removeByRecordId(recordId);
     },
   },
+
+  users: {
+    async store(user: User) {
+      const result = await ds.store("users", user, {
+        unique: ["email"],
+      });
+
+      user.recordId = result.recordIds?.[0];
+      return user;
+    },
+  },
 };
 
 export default store;

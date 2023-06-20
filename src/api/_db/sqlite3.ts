@@ -1,5 +1,5 @@
 import type { Store } from "./store.d";
-import sqlite3, { RunResult } from "sqlite3";
+import * as sqlite3 from "sqlite3";
 
 interface SqliteStore extends Store {
   setup(): Promise<Store>;
@@ -21,7 +21,7 @@ function insert(template: Template): Promise<Template> {
         $defaultSubject: template.defaultSubject || null,
         $isDefault: template.isDefault || false,
       },
-      function (this: RunResult, err: Error | null) {
+      function (this: sqlite3.RunResult, err: Error | null) {
         if (err) {
           return reject(err);
         }
@@ -54,7 +54,7 @@ function update(template: Template): Promise<Template> {
         $defaultSubject: template.defaultSubject || null,
         $isDefault: template.isDefault || false,
       },
-      function (this: RunResult, err: Error | null) {
+      function (this: sqlite3.RunResult, err: Error | null) {
         if (err) {
           return reject(err);
         }
@@ -87,6 +87,16 @@ const store: SqliteStore = {
                 default_subject TEXT NULL,
                 is_default BOOLEAN DEFAULT FALSE
            );`
+        );
+
+        db.run(
+          `CREATE TABLE IF NOT EXISTS users (
+            email TEXT UNIQUE NOT NULL,
+            first_name TEXT NULL,
+            last_name TEXT NULL,
+            is_unsubscribed BOOLEAN DEFAULT FALSE,
+            attributes JSONB NULL
+          );`
         );
 
         resolve(store);
@@ -179,12 +189,44 @@ const store: SqliteStore = {
           return db.run(
             `DELETE FROM templates WHERE rowid = $recordId`,
             { $recordId: Number(id) },
-            function (this: RunResult, err: Error | null) {
+            function (this: sqlite3.RunResult, err: Error | null) {
               if (err) {
                 return reject(err);
               }
 
               return resolve({ ok: true });
+            }
+          );
+        });
+      });
+    },
+  },
+
+  users: {
+    store(user: User) {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.run(
+            `INSERT INTO users
+                (email, first_name, last_name, is_unsubscribed, attributes)
+             VALUES
+                ($email, $firstName, $lastName, $isUnsubscribed, $attributes)`,
+            {
+              $email: user.email,
+              $firstName: user.firstName,
+              $lastName: user.lastName,
+              $isUnsubscribed: user.isUnsubscribed || false,
+              $attributes: user.attributes,
+            },
+            function (this: sqlite3.RunResult, err: Error | null) {
+              if (err) {
+                return reject(err);
+              }
+
+              return resolve({
+                ...user,
+                recordId: this.lastID.toString(),
+              });
             }
           );
         });

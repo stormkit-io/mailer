@@ -5,4 +5,8 @@ export interface Store {
     store(template: Template): Promise<Template>;
     removeById(id: string): Promise<{ ok: boolean }>;
   };
+
+  users: {
+    store(user: User): Promise<User>;
+  };
 }
