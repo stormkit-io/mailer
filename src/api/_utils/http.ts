@@ -151,15 +151,27 @@ function app(
         return send(res, { error: e.message }, internalServerErr);
       }
 
-      if (e instanceof http.ServerResponse) {
+      if (e instanceof http.IncomingMessage) {
+        const body = await readBody(e);
+
         return send(
           res,
-          { statusCode: e.statusCode, statusMessage: e.statusMessage },
+          {
+            statusCode: e.statusCode,
+            statusMessage: e.statusMessage,
+            error: body,
+          },
           internalServerErr
         );
       }
 
-      return send(res, { error: e }, internalServerErr);
+      console.log(e);
+
+      return send(
+        res,
+        { error: "Something unexpected happened." },
+        internalServerErr
+      );
     }
   };
 }

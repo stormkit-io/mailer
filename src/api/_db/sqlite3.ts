@@ -74,18 +74,18 @@ const store: SqliteStore = {
       db.serialize(() => {
         db.run(
           `CREATE TABLE IF NOT EXISTS migrations (
-                migration_version INT NOT NULL DEFAULT 1,
-                is_dirty BOOLEAN DEFAULT FALSE
+              migration_version INT NOT NULL DEFAULT 1,
+              is_dirty BOOLEAN DEFAULT FALSE
            );`
         );
 
         db.run(
           `CREATE TABLE IF NOT EXISTS templates (
-                template_name TEXT NOT NULL,
-                template_html TEXT NOT NULL,
-                template_desc TEXT NULL,
-                default_subject TEXT NULL,
-                is_default BOOLEAN DEFAULT FALSE
+              template_name TEXT NOT NULL,
+              template_html TEXT NOT NULL,
+              template_desc TEXT NULL,
+              default_subject TEXT NULL,
+              is_default BOOLEAN DEFAULT FALSE
            );`
         );
 
@@ -125,7 +125,12 @@ const store: SqliteStore = {
                 return reject(error);
               }
 
-              resolve(rows);
+              resolve(
+                rows.map((row) => ({
+                  ...row,
+                  recordId: row.recordId?.toString(),
+                }))
+              );
             }
           );
         });
@@ -145,7 +150,7 @@ const store: SqliteStore = {
              FROM
                 templates
              WHERE rowid = $recordId
-             LIMIT 50`,
+             LIMIT 1;`,
             {
               $recordId: Number(id),
             },
@@ -154,6 +159,7 @@ const store: SqliteStore = {
                 return reject(error);
               }
 
+              rows[0].recordId = rows[0].recordId?.toString();
               resolve(rows[0] as Template);
             }
           );
@@ -203,24 +209,117 @@ const store: SqliteStore = {
   },
 
   users: {
-    store(user: User) {
+    list(afterId = "0") {
       return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.all<User>(
+            `SELECT
+              email,
+              rowid as recordId,
+              first_name as firstName,
+              last_name as lastName,
+              is_unsubscribed as isUnsubscribed,
+              attributes
+             FROM users
+             WHERE rowid > $recordId
+             ORDER BY rowid DESC LIMIT 25;`,
+            { $recordId: Number(afterId) },
+            (error, rows) => {
+              if (error) {
+                return reject(error);
+              }
+
+              resolve(
+                rows.map((row) => ({
+                  ...row,
+                  attributes: row.attributes
+                    ? JSON.parse(row.attributes as unknown as string)
+                    : {},
+                  recordId: row.recordId?.toString(),
+                  isUnsubscribed: Boolean(row.isUnsubscribed),
+                }))
+              );
+            }
+          );
+        });
+      });
+    },
+
+    listByEmail(emails) {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.all<User>(
+            `SELECT
+              email,
+              rowid as recordId,
+              first_name as firstName,
+              last_name as lastName,
+              is_unsubscribed as isUnsubscribed,
+              attributes
+             FROM users
+             WHERE email IN (${emails?.map(() => "?").join(", ")})
+             ORDER BY rowid DESC LIMIT 25;`,
+            emails,
+            (error, rows) => {
+              if (error) {
+                return reject(error);
+              }
+
+              resolve(
+                rows.map((row) => ({
+                  ...row,
+                  attributes: row.attributes
+                    ? JSON.parse(row.attributes as unknown as string)
+                    : {},
+                  recordId: row.recordId?.toString(),
+                  isUnsubscribed: Boolean(row.isUnsubscribed),
+                }))
+              );
+            }
+          );
+        });
+      });
+    },
+
+    store(user: User | User[]) {
+      return new Promise((resolve, reject) => {
+        let values: string;
+        let params: any;
+
+        if (Array.isArray(user)) {
+          values = user.map((u) => "(?, ?, ?, ?, ?)").join(", ");
+          params = user.flatMap((u) => [
+            u.email,
+            u.firstName,
+            u.lastName,
+            u.isUnsubscribed,
+            JSON.stringify(u.attributes || {}),
+          ]);
+        } else {
+          values = `($email, $firstName, $lastName, $isUnsubscribed, $attributes)`;
+          params = {
+            $email: user.email,
+            $firstName: user.firstName,
+            $lastName: user.lastName,
+            $isUnsubscribed: user.isUnsubscribed || false,
+            $attributes: JSON.stringify(user.attributes || {}),
+          };
+        }
+
         db.serialize(() => {
           db.run(
             `INSERT INTO users
                 (email, first_name, last_name, is_unsubscribed, attributes)
              VALUES
-                ($email, $firstName, $lastName, $isUnsubscribed, $attributes)`,
-            {
-              $email: user.email,
-              $firstName: user.firstName,
-              $lastName: user.lastName,
-              $isUnsubscribed: user.isUnsubscribed || false,
-              $attributes: user.attributes,
-            },
+                ${values}`,
+            params,
             function (this: sqlite3.RunResult, err: Error | null) {
               if (err) {
                 return reject(err);
+              }
+
+              if (Array.isArray(user)) {
+                return resolve(user);
               }
 
               return resolve({
