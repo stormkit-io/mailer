@@ -21,7 +21,7 @@ const store: Store = {
     },
 
     async removeById(recordId: string) {
-      return await ds.removeByRecordId(recordId);
+      return await ds.removeByRecordId("templates", recordId);
     },
   },
 
@@ -69,7 +69,7 @@ const store: Store = {
     },
 
     async delete(recordIds) {
-      return await ds.removeByRecordId(recordIds);
+      return await ds.removeByRecordId("users", recordIds);
     },
   },
 };
