@@ -55,7 +55,7 @@ describe("GET /api/subscribers", () => {
 
       expect(writeSpy).toHaveBeenCalledTimes(1);
       expect(JSON.parse(writeSpy.mock.calls[0])).toEqual({
-        users: users.reverse(),
+        users: [users[0]],
       });
 
       expect(writeHeadSpy).toHaveBeenCalledWith(StatusCodes.OK, "Success");

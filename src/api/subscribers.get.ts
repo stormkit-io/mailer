@@ -7,7 +7,7 @@ export default hu.app(
     const store = await db();
 
     hu.send(res, {
-      users: await store.users.list(),
+      users: await store.users.subscribers(),
     });
   }
 );

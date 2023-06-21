@@ -26,6 +26,14 @@ const store: Store = {
   },
 
   users: {
+    async subscribers(afterId = "0") {
+      return await ds.fetch<User>(
+        "users",
+        { recordId: { ">": afterId }, isUnsubscribed: { "!=": true } },
+        { sortDir: "DESC", limit: 25 }
+      );
+    },
+
     async list(afterId = "0") {
       return await ds.fetch<User>(
         "users",

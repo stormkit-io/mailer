@@ -99,7 +99,7 @@ export default hu.app(
 
       // New user, insert into DB
       if (typeof isUnsubscribed === "undefined") {
-        newUsers.push({ email: lowerCaseEmail });
+        newUsers.push({ email: lowerCaseEmail, isUnsubscribed: false });
       }
 
       return true;

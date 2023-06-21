@@ -7,6 +7,7 @@ export interface Store {
   };
 
   users: {
+    subscribers(afterId?: string): Promise<User[]>;
     list(afterId?: string): Promise<User[]>;
     listByEmail(emails?: string[]): Promise<User[]>;
     store(user: User | User[]): Promise<User | User[]>;

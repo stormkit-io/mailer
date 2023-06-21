@@ -68,6 +68,25 @@ function update(template: Template): Promise<Template> {
   });
 }
 
+const queries = {
+  selectUsers: `
+    SELECT
+      email, rowid as recordId, first_name as firstName,
+      last_name as lastName, is_unsubscribed as isUnsubscribed,
+      attributes
+    FROM users`,
+
+  selectTemplates: `
+    SELECT
+      template_name as name,
+      template_html as html,
+      template_desc as description,
+      default_subject as defaultSubject,
+      is_default as isDefault
+    FROM
+      templates`,
+};
+
 const store: SqliteStore = {
   setup() {
     return new Promise((resolve, reject) => {
@@ -109,16 +128,7 @@ const store: SqliteStore = {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
           db.all<Template>(
-            `SELECT
-                rowid as recordId,
-                template_name as name,
-                template_html as html,
-                template_desc as description,
-                default_subject as defaultSubject,
-                is_default as isDefault
-             FROM
-                templates
-             LIMIT 50`,
+            `${queries.selectTemplates} LIMIT 50`,
             [],
             (error, rows) => {
               if (error) {
@@ -141,16 +151,7 @@ const store: SqliteStore = {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
           db.all<Template>(
-            `SELECT
-                template_name as name,
-                template_html as html,
-                template_desc as description,
-                default_subject as defaultSubject,
-                is_default as isDefault
-             FROM
-                templates
-             WHERE rowid = $recordId
-             LIMIT 1;`,
+            `${queries.selectTemplates} WHERE rowid = $recordId LIMIT 1;`,
             {
               $recordId: Number(id),
             },
@@ -209,18 +210,40 @@ const store: SqliteStore = {
   },
 
   users: {
+    subscribers(afterId = "0") {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.all<User>(
+            `${queries.selectUsers}
+             WHERE rowid > $recordId AND is_unsubscribed IS NOT TRUE
+             ORDER BY rowid DESC LIMIT 25;`,
+            { $recordId: Number(afterId) },
+            (error, rows) => {
+              if (error) {
+                return reject(error);
+              }
+
+              resolve(
+                rows.map((row) => ({
+                  ...row,
+                  attributes: row.attributes
+                    ? JSON.parse(row.attributes as unknown as string)
+                    : {},
+                  recordId: row.recordId?.toString(),
+                  isUnsubscribed: Boolean(row.isUnsubscribed),
+                }))
+              );
+            }
+          );
+        });
+      });
+    },
+
     list(afterId = "0") {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
           db.all<User>(
-            `SELECT
-              email,
-              rowid as recordId,
-              first_name as firstName,
-              last_name as lastName,
-              is_unsubscribed as isUnsubscribed,
-              attributes
-             FROM users
+            `${queries.selectUsers}
              WHERE rowid > $recordId
              ORDER BY rowid DESC LIMIT 25;`,
             { $recordId: Number(afterId) },
@@ -249,15 +272,9 @@ const store: SqliteStore = {
       return new Promise((resolve, reject) => {
         db.serialize(() => {
           db.all<User>(
-            `SELECT
-              email,
-              rowid as recordId,
-              first_name as firstName,
-              last_name as lastName,
-              is_unsubscribed as isUnsubscribed,
-              attributes
-             FROM users
-             WHERE email IN (${emails?.map(() => "?").join(", ")})
+            `${queries.selectUsers}
+             WHERE 
+              email IN (${emails?.map(() => "?").join(", ")})
              ORDER BY rowid DESC LIMIT 25;`,
             emails,
             (error, rows) => {
