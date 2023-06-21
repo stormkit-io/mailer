@@ -5,9 +5,9 @@ import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 import Typography from "@mui/material/Typography";
 import HomeIcon from "@mui/icons-material/Home";
+import UserIcon from "@mui/icons-material/Group";
 import Context from "~/context";
 
 interface Props {
@@ -19,6 +19,7 @@ const isDemo = process.env.DEMO;
 const menu = [
   { text: "Home", path: "/", Icon: HomeIcon },
   { text: "Templates", path: "/templates", Icon: FileCopyIcon },
+  { text: "Users", path: "/users", Icon: UserIcon },
 ];
 
 export default function Layout({ children }: Props) {

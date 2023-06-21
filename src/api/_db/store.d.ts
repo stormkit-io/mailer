@@ -11,5 +11,6 @@ export interface Store {
     list(afterId?: string): Promise<User[]>;
     listByEmail(emails?: string[]): Promise<User[]>;
     store(user: User | User[]): Promise<User | User[]>;
+    delete(recordId: string | string[]): Promise<{ ok: boolean }>;
   };
 }

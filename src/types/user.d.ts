@@ -3,6 +3,6 @@ declare interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  isUnsubscribed?: boolean;
+  isUnsubscribed: boolean;
   attributes?: Record<string, unknown>;
 }

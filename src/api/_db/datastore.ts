@@ -67,6 +67,10 @@ const store: Store = {
 
       return user;
     },
+
+    async delete(recordIds) {
+      return await ds.removeByRecordId(recordIds);
+    },
   },
 };
 

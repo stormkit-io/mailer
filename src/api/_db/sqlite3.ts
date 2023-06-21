@@ -304,7 +304,7 @@ const store: SqliteStore = {
         let params: any;
 
         if (Array.isArray(user)) {
-          values = user.map((u) => "(?, ?, ?, ?, ?)").join(", ");
+          values = user.map(() => "(?, ?, ?, ?, ?)").join(", ");
           params = user.flatMap((u) => [
             u.email,
             u.firstName,
@@ -343,6 +343,28 @@ const store: SqliteStore = {
                 ...user,
                 recordId: this.lastID.toString(),
               });
+            }
+          );
+        });
+      });
+    },
+
+    async delete(recordIds) {
+      return new Promise((resolve, reject) => {
+        db.serialize(() => {
+          const rowIds = Array.isArray(recordIds) ? recordIds : [recordIds];
+          const values = rowIds.map(() => "?").join(", ");
+          const params = rowIds.flatMap((id) => [id]);
+
+          db.run(
+            `DELETE FROM users WHERE rowin IN (${values})`,
+            params,
+            function (this: sqlite3.RunResult, err: Error | null) {
+              if (err) {
+                return reject(err);
+              }
+
+              resolve({ ok: true });
             }
           );
         });
