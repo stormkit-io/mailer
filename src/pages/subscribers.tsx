@@ -17,7 +17,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import UserDialog from "~/components/UserDialog";
 import Prompt from "~/components/Prompt";
 import CrudMenu from "~/components/CrudMenu";
-import { useFetchUsers, deleteUser } from "./users.actions";
+import { useFetchUsers, deleteUser } from "./subscribers.actions";
 
 export default function Users() {
   const [refreshToken, setRefreshToken] = useState(0);
@@ -120,8 +120,8 @@ export default function Users() {
         <LinearProgress />
       ) : (
         <Alert color="warning">
-          <AlertTitle>You do not have any users</AlertTitle>
-          <Typography>Click New Template to create a new one.</Typography>
+          <AlertTitle>You do not have any subscribers</AlertTitle>
+          <Typography>Click New Subscriber to create a new one.</Typography>
         </Alert>
       )}
 

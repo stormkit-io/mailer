@@ -19,7 +19,7 @@ const isDemo = process.env.DEMO;
 const menu = [
   { text: "Home", path: "/", Icon: HomeIcon },
   { text: "Templates", path: "/templates", Icon: FileCopyIcon },
-  { text: "Users", path: "/users", Icon: UserIcon },
+  { text: "Subscribers", path: "/subscribers", Icon: UserIcon },
 ];
 
 export default function Layout({ children }: Props) {

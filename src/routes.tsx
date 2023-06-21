@@ -15,7 +15,7 @@ const routes: Route[] = [
   { path: "/", import: () => import("~/pages") },
   { path: "/login", import: () => import("~/pages/login") },
   { path: "/templates", import: () => import("~/pages/templates") },
-  { path: "/users", import: () => import("~/pages/users") },
+  { path: "/subscribers", import: () => import("~/pages/subscribers") },
 ];
 
 const isServerSide = typeof window === "undefined";
