@@ -303,6 +303,7 @@ const store: SqliteStore = {
       return new Promise((resolve, reject) => {
         let values: string;
         let params: any;
+        let query: string;
 
         if (Array.isArray(user)) {
           values = user.map(() => "(?, ?, ?, ?, ?)").join(", ");
@@ -324,12 +325,28 @@ const store: SqliteStore = {
           };
         }
 
+        if (!Array.isArray(user) && user.recordId) {
+          params.$recordId = user.recordId;
+          delete params.$isUnsubscribed;
+
+          query = `
+            UPDATE users SET
+              email = $email,
+              first_name = $firstName,
+              last_name = $lastName,
+              attributes = $attributes
+            WHERE rowid = $recordId;`;
+        } else {
+          query = `
+            INSERT INTO users
+              (email, first_name, last_name, is_unsubscribed, attributes)
+            VALUES
+              ${values}`;
+        }
+
         db.serialize(() => {
           db.run(
-            `INSERT INTO users
-                (email, first_name, last_name, is_unsubscribed, attributes)
-             VALUES
-                ${values}`,
+            query,
             params,
             function (this: sqlite3.RunResult, err: Error | null) {
               if (err) {
@@ -340,10 +357,8 @@ const store: SqliteStore = {
                 return resolve(user);
               }
 
-              return resolve({
-                ...user,
-                recordId: this.lastID.toString(),
-              });
+              user.recordId = this.lastID.toString();
+              return resolve(user);
             }
           );
         });

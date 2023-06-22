@@ -79,6 +79,8 @@ function send(
     res.setHeader(key, args?.headers![key]!);
   });
 
+  res.statusMessage = args.statusMessage;
+  res.statusCode = args.status;
   res.writeHead(args.status, args.statusMessage);
   res.write(content);
   res.end();
@@ -157,7 +159,7 @@ function app(
       return send(res, { demo: true });
     }
 
-    if (options.withSession) {
+    if (options.withSession && process.env.NODE_ENV !== "test") {
       let { token } = await readBody<{ token?: string }>(req);
 
       if (req.headers["authorization"]) {

@@ -37,6 +37,7 @@ export default hu.app(
       res,
       {
         user: await store.users.store({
+          recordId: user.recordId,
           email: user.email.trim(),
           firstName: user.firstName?.trim(),
           lastName: user.lastName?.trim(),
