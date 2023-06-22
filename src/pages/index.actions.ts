@@ -46,6 +46,9 @@ export const sendEmail = ({
       data,
       subject,
     }),
+    headers: {
+      Authorization: `Bearer ${localStorage.login}`,
+    },
   })
     .then(async (res) => {
       const data = await res.json();

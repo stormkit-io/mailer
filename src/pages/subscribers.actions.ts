@@ -10,7 +10,11 @@ export function useFetchUsers({ refreshToken }: FetchUsersProps = {}) {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/subscribers")
+    fetch("/api/subscribers", {
+      headers: {
+        Authorization: `Bearer ${localStorage.login}`,
+      },
+    })
       .then(async (res) => {
         const data = (await res.json()) as { users: User[] };
         setUsers(data.users);
@@ -41,6 +45,9 @@ export function deleteUser({ recordId }: DeleteUserProps) {
   return fetch("/api/subscriber", {
     method: "DELETE",
     body: JSON.stringify({ recordIds: [recordId] }),
+    headers: {
+      Authorization: `Bearer ${localStorage.login}`,
+    },
   }).then(async (res) => {
     return await res.json();
   });

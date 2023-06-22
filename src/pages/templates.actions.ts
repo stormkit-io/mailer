@@ -10,7 +10,11 @@ export function useFetchTemplates({ refreshToken }: FetchTemplatesProps = {}) {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/templates")
+    fetch("/api/templates", {
+      headers: {
+        Authorization: `Bearer ${localStorage.login}`,
+      },
+    })
       .then(async (res) => {
         const data = (await res.json()) as { templates: Template[] };
         setTemplates(data.templates);
@@ -34,6 +38,9 @@ export function deleteTemplate({ recordId }: DeleteTemplateProps) {
   return fetch("/api/template", {
     method: "DELETE",
     body: JSON.stringify({ recordId }),
+    headers: {
+      Authorization: `Bearer ${localStorage.login}`,
+    },
   }).then(async (res) => {
     return await res.json();
   });

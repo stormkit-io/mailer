@@ -125,8 +125,13 @@ function extractBearerToken(headers: http.IncomingHttpHeaders): string | void {
   }
 }
 
+interface AppOptions {
+  withSession?: boolean;
+}
+
 function app(
-  handler: (req: http.IncomingMessage, res: http.ServerResponse) => void
+  handler: (req: http.IncomingMessage, res: http.ServerResponse) => void,
+  options: AppOptions = { withSession: true }
 ) {
   return async (req: http.IncomingMessage, res: http.ServerResponse) => {
     const method = req.method?.toUpperCase() || "GET";
@@ -140,6 +145,18 @@ function app(
       whiteList.indexOf(pathname) === -1
     ) {
       return send(res, { demo: true });
+    }
+
+    if (options.withSession) {
+      let { token } = await readBody<{ token?: string }>(req);
+
+      if (req.headers["authorization"]) {
+        token = req.headers["authorization"].split("Bearer ").pop();
+      }
+
+      if (!token || !(await isAuthorized(token))) {
+        return send(res, { ok: false }, { status: StatusCodes.UNAUTHORIZED });
+      }
     }
 
     try {

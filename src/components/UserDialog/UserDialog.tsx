@@ -114,6 +114,9 @@ export default function TemplateDialog({
         userFirstName: userFirstName?.trim(),
         userLastNameect: userLastName?.trim(),
       }),
+      headers: {
+        Authorization: `Bearer ${localStorage.login}`,
+      },
     })
       .then(() => {
         onSuccess();

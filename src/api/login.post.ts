@@ -28,5 +28,6 @@ export default hu.app(
     }
 
     hu.send(res, { ok: false }, { status: StatusCodes.UNAUTHORIZED });
-  }
+  },
+  { withSession: false }
 );
