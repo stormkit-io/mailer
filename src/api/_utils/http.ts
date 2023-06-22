@@ -2,12 +2,20 @@ import * as http from "node:http";
 import * as jwt from "jose";
 import { StatusCodes } from "http-status-codes";
 
-function readBody<T>(req: http.IncomingMessage): Promise<T> {
+interface CustomIncomingMessage extends http.IncomingMessage {
+  __body?: unknown;
+}
+
+function readBody<T>(req: CustomIncomingMessage): Promise<T> {
   return new Promise((resolve, reject) => {
     const data: Buffer[] = [];
 
     if (req.method?.toUpperCase() === "GET" || !req.method) {
       return resolve({} as T);
+    }
+
+    if (req.__body) {
+      return resolve(req.__body as T);
     }
 
     req
@@ -30,7 +38,9 @@ function readBody<T>(req: http.IncomingMessage): Promise<T> {
         }
 
         try {
-          return resolve(JSON.parse(body.toString("utf-8")));
+          const data = JSON.parse(body.toString("utf-8"));
+          req.__body = data;
+          return resolve(data);
         } catch {
           return resolve({} as T);
         }

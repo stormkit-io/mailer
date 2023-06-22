@@ -358,7 +358,7 @@ const store: SqliteStore = {
           const params = rowIds.flatMap((id) => [id]);
 
           db.run(
-            `DELETE FROM users WHERE rowin IN (${values})`,
+            `DELETE FROM users WHERE rowid IN (${values})`,
             params,
             function (this: sqlite3.RunResult, err: Error | null) {
               if (err) {

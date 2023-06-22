@@ -1,4 +1,5 @@
 import { FormEventHandler, useEffect, useState } from "react";
+import { StatusCodes } from "http-status-codes";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Drawer from "@mui/material/Drawer";
@@ -22,12 +23,7 @@ const errors: Record<string, string> = {
   generic: "Something went wrong while submitting the form.",
 };
 
-export default function TemplateDialog({
-  open,
-  user,
-  onClose,
-  onSuccess,
-}: Props) {
+export default function UserDialog({ open, user, onClose, onSuccess }: Props) {
   const theme = useTheme();
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +48,7 @@ export default function TemplateDialog({
       label: "Email",
       name: "email",
       value: userEmail,
+      autoFocus: true,
       onChange: setUserEmail,
     },
     {
@@ -109,17 +106,31 @@ export default function TemplateDialog({
       method: user ? "PATCH" : "POST",
       body: JSON.stringify({
         recordId: user?.recordId,
-        userEmail: userEmail?.trim(),
-        userAttributes: parsedAttributes,
-        userFirstName: userFirstName?.trim(),
-        userLastNameect: userLastName?.trim(),
+        email: userEmail?.trim(),
+        firstName: userFirstName?.trim(),
+        lastName: userLastName?.trim(),
+        attributes: parsedAttributes,
       }),
       headers: {
         Authorization: `Bearer ${localStorage.login}`,
       },
     })
-      .then(() => {
-        onSuccess();
+      .then(async (res) => {
+        if (res.status === StatusCodes.CREATED) {
+          setUserAttributes(undefined);
+          setUserEmail(undefined);
+          setUserFirstName(undefined);
+          setUserLastName(undefined);
+          onSuccess();
+        } else if (res.status === StatusCodes.BAD_REQUEST) {
+          const { errors } = (await res.json()) as {
+            errors: Record<string, string>;
+          };
+
+          setFormErrors(errors);
+        } else {
+          setFormErrors({ generic: errors.generic });
+        }
       })
       .catch(() => {
         setFormErrors({ generic: errors.generic });
@@ -128,6 +139,8 @@ export default function TemplateDialog({
         setIsLoading(false);
       });
   };
+
+  const hasFormError = formErrors && Object.keys(formErrors).length > 0;
 
   return (
     <Drawer
@@ -175,6 +188,7 @@ export default function TemplateDialog({
                   color="primary"
                   variant="filled"
                   autoComplete="off"
+                  autoFocus={field.autoFocus}
                   value={field.value || ""}
                   fullWidth
                   rows={field.multiline ? 10 : 1}
@@ -187,12 +201,12 @@ export default function TemplateDialog({
               </Box>
             ))}
           </Box>
-          {formErrors && (
+          {hasFormError && (
             <Alert color="error" sx={{ mx: 2, mb: 2 }}>
               <AlertTitle>Error</AlertTitle>
               <Typography>
                 {Object.keys(formErrors).map((key) => (
-                  <div>{formErrors[key]}</div>
+                  <span key={key}>{formErrors[key]}</span>
                 ))}
               </Typography>
             </Alert>
