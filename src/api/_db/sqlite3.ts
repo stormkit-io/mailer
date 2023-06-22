@@ -78,6 +78,7 @@ const queries = {
 
   selectTemplates: `
     SELECT
+      rowid as recordId,
       template_name as name,
       template_html as html,
       template_desc as description,
@@ -174,7 +175,7 @@ const store: SqliteStore = {
      */
     store(template) {
       return new Promise((resolve, reject) => {
-        db.serialize(() => {
+        db.serialize(async () => {
           if (template.isDefault) {
             db.run(
               `UPDATE templates SET is_default = FALSE WHERE is_default = TRUE;`
@@ -182,10 +183,10 @@ const store: SqliteStore = {
           }
 
           if (!template.recordId) {
-            return insert(template).then(resolve).catch(reject);
+            return resolve(await insert(template));
           }
 
-          return update(template).then(resolve).catch(reject);
+          return resolve(await update(template));
         });
       });
     },
