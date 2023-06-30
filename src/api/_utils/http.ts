@@ -1,50 +1,36 @@
 import * as http from "node:http";
 import * as jwt from "jose";
+import formidable from "formidable";
 import { StatusCodes } from "http-status-codes";
 
-interface CustomIncomingMessage extends http.IncomingMessage {
-  __body?: unknown;
+interface CustomIncomingMessage<T> extends http.IncomingMessage {
+  __body?: T;
 }
 
-function readBody<T>(req: CustomIncomingMessage): Promise<T> {
+async function readBody<T>(req: CustomIncomingMessage<T>): Promise<T> {
+  const form = formidable({});
+
+  if (req.method === "GET") {
+    return {} as T;
+  }
+
+  if (req.__body) {
+    return Promise.resolve(req.__body);
+  }
+
   return new Promise((resolve, reject) => {
-    const data: Buffer[] = [];
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return reject(err.message);
+      }
 
-    if (req.method?.toUpperCase() === "GET" || !req.method) {
-      return resolve({} as T);
-    }
+      req.__body = {
+        ...fields,
+        file: Array.isArray(files.file) ? files.file[0] : files.file,
+      } as T;
 
-    if (req.__body) {
-      return resolve(req.__body as T);
-    }
-
-    req
-      .on("error", (err) => {
-        reject(err);
-      })
-      .on("data", (chunk) => {
-        data.push(chunk);
-      })
-      .on("end", () => {
-        const body = Buffer.isBuffer(data) ? Buffer.concat(data) : data;
-
-        const isUrlEncoded =
-          req.headers["content-type"] === "application/x-www-form-urlencoded";
-
-        if (isUrlEncoded) {
-          return resolve(
-            Object.fromEntries(new URLSearchParams(body.toString("utf-8"))) as T
-          );
-        }
-
-        try {
-          const data = JSON.parse(body.toString("utf-8"));
-          req.__body = data;
-          return resolve(data);
-        } catch {
-          return resolve({} as T);
-        }
-      });
+      return resolve(req.__body!);
+    });
   });
 }
 
