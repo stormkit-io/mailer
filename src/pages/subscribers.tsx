@@ -15,6 +15,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import UserDialog from "~/components/UserDialog";
+import UploadDialog from "~/components/UploadDialog";
 import Prompt from "~/components/Prompt";
 import CrudMenu from "~/components/CrudMenu";
 import { useFetchUsers, deleteUser } from "./subscribers.actions";
@@ -23,6 +24,7 @@ export default function Users() {
   const [refreshToken, setRefreshToken] = useState(0);
   const { users, isLoading } = useFetchUsers({ refreshToken });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [csvFile, setCsvFile] = useState<File>();
   const [isDeletingTemplate, setIsDeletingTemplate] = useState(false);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [isDeletePromptOpen, setIsDeletePromptOpen] = useState(false);
@@ -51,16 +53,34 @@ export default function Users() {
         <Typography variant="h5" color="info.main">
           Subscribers
         </Typography>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => {
-            setIsUserDialogOpen(true);
-            setSelectedUser(undefined);
-          }}
-        >
-          New Subscriber
-        </Button>
+        <Box>
+          <Button
+            variant="outlined"
+            color="secondary"
+            sx={{ mr: 2 }}
+            component="label"
+          >
+            Import
+            <input
+              accept=".csv"
+              style={{ display: "none" }}
+              type="file"
+              onChange={(e) => {
+                setCsvFile(e.target?.files?.[0]);
+              }}
+            />
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              setIsUserDialogOpen(true);
+              setSelectedUser(undefined);
+            }}
+          >
+            New Subscriber
+          </Button>
+        </Box>
       </Box>
       {users.length ? (
         <TableContainer component={Paper}>
@@ -124,6 +144,14 @@ export default function Users() {
           <Typography>Click New Subscriber to create a new one.</Typography>
         </Alert>
       )}
+
+      <UploadDialog
+        open={Boolean(csvFile)}
+        file={csvFile}
+        onClose={() => {
+          setCsvFile(undefined);
+        }}
+      />
 
       <UserDialog
         open={isUserDialogOpen}
