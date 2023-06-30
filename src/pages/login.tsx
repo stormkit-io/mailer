@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { fetcher } from "~/utils";
 import Context from "../context";
 
 const Home: React.FC = () => {
@@ -18,9 +19,9 @@ const Home: React.FC = () => {
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    return fetch("/api/login", {
+    return fetcher("/api/login", {
       method: "POST",
-      body: JSON.stringify({ username, password }),
+      body: { username, password },
     }).then(async (res) => {
       const data: { token?: string } = await res.json();
 

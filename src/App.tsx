@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import LinearProgress from "@mui/material/LinearProgress";
 import Layout from "~/components/Layout";
+import { fetcher } from "./utils";
 import theme from "./mui-theme";
 import Context from "./context";
 
@@ -28,7 +29,11 @@ export default function App({ routes }: Props) {
       return;
     }
 
-    fetch("/api/session", { method: "POST", body: JSON.stringify({ token }) })
+    fetcher("/api/session", {
+      method: "POST",
+      body: { token },
+      withAuth: false,
+    })
       .then(async (res) => {
         const data: { ok: boolean } = await res.json();
 
