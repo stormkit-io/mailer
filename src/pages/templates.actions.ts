@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetcher } from "~/utils";
 
 interface FetchTemplatesProps {
   refreshToken?: number;
@@ -10,11 +11,7 @@ export function useFetchTemplates({ refreshToken }: FetchTemplatesProps = {}) {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/templates", {
-      headers: {
-        Authorization: `Bearer ${localStorage.login}`,
-      },
-    })
+    fetcher("/api/templates")
       .then(async (res) => {
         const data = (await res.json()) as { templates: Template[] };
         setTemplates(data.templates);
@@ -35,12 +32,9 @@ interface DeleteTemplateProps {
 }
 
 export function deleteTemplate({ recordId }: DeleteTemplateProps) {
-  return fetch("/api/template", {
+  return fetcher("/api/template", {
     method: "DELETE",
-    body: JSON.stringify({ recordId }),
-    headers: {
-      Authorization: `Bearer ${localStorage.login}`,
-    },
+    body: { recordId },
   }).then(async (res) => {
     return await res.json();
   });

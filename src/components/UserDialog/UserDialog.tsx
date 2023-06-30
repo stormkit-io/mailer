@@ -9,6 +9,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/lab/LoadingButton";
 import { useTheme } from "@mui/material/styles";
+import { fetcher } from "~/utils";
 
 interface Props {
   open: boolean;
@@ -102,17 +103,14 @@ export default function UserDialog({ open, user, onClose, onSuccess }: Props) {
 
     setIsLoading(true);
 
-    fetch("/api/subscriber", {
+    fetcher("/api/subscriber", {
       method: user ? "PATCH" : "POST",
-      body: JSON.stringify({
+      body: {
         recordId: user?.recordId,
         email: userEmail?.trim(),
         firstName: userFirstName?.trim(),
         lastName: userLastName?.trim(),
         attributes: parsedAttributes,
-      }),
-      headers: {
-        Authorization: `Bearer ${localStorage.login}`,
       },
     })
       .then(async (res) => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetcher } from "~/utils";
 
 interface FetchUsersProps {
   refreshToken?: number;
@@ -10,11 +11,7 @@ export function useFetchUsers({ refreshToken }: FetchUsersProps = {}) {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    fetch("/api/subscribers", {
-      headers: {
-        Authorization: `Bearer ${localStorage.login}`,
-      },
-    })
+    fetcher("/api/subscribers")
       .then(async (res) => {
         const data = (await res.json()) as { users: User[] };
         setUsers(data.users);
@@ -42,12 +39,9 @@ interface DeleteUserProps {
 }
 
 export function deleteUser({ recordId }: DeleteUserProps) {
-  return fetch("/api/subscriber", {
+  return fetcher("/api/subscriber", {
     method: "DELETE",
-    body: JSON.stringify({ recordIds: [recordId] }),
-    headers: {
-      Authorization: `Bearer ${localStorage.login}`,
-    },
+    body: { recordIds: [recordId] },
   }).then(async (res) => {
     return await res.json();
   });

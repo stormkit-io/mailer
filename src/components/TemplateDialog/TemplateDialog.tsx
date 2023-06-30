@@ -6,6 +6,7 @@ import Drawer from "@mui/material/Drawer";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/lab/LoadingButton";
 import { useTheme } from "@mui/material/styles";
+import { fetcher } from "~/utils";
 
 interface Props {
   open: boolean;
@@ -116,17 +117,14 @@ export default function TemplateDialog({
 
     setIsLoading(true);
 
-    fetch("/api/template", {
+    fetcher("/api/template", {
       method: template ? "PATCH" : "POST",
-      body: JSON.stringify({
+      body: {
         recordId: template?.recordId,
         templateName: templateName?.trim(),
         templateHtml: templateHtml?.trim(),
         templateDesc: templateDesc?.trim(),
         templateSubject: templateSubj?.trim(),
-      }),
-      headers: {
-        Authorization: `Bearer ${localStorage.login}`,
       },
     })
       .then(() => {

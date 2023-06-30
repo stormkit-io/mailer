@@ -1,3 +1,5 @@
+import { fetcher } from "~/utils";
+
 export const validateEmails = (emails: string[]): boolean => {
   if (!emails || !emails.length) {
     return false;
@@ -38,16 +40,13 @@ export const sendEmail = ({
     }
   });
 
-  return fetch("/api/mail", {
+  return fetcher("/api/mail", {
     method: "POST",
-    body: JSON.stringify({
+    body: {
       email: emails,
       templateId: template?.recordId,
       data,
       subject,
-    }),
-    headers: {
-      Authorization: `Bearer ${localStorage.login}`,
     },
   })
     .then(async (res) => {
