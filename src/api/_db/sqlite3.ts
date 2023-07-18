@@ -73,7 +73,7 @@ const queries = {
     SELECT
       email, rowid as recordId, first_name as firstName,
       last_name as lastName, is_unsubscribed as isUnsubscribed,
-      attributes
+      attributes, created_at as createdAt
     FROM users`,
 
   selectTemplates: `
@@ -115,7 +115,8 @@ const store: SqliteStore = {
             first_name TEXT NULL,
             last_name TEXT NULL,
             is_unsubscribed BOOLEAN DEFAULT FALSE,
-            attributes JSONB NULL
+            attributes JSONB NULL,
+            created_at NUMERIC
           );`
         );
 
@@ -306,28 +307,31 @@ const store: SqliteStore = {
         let query: string;
 
         if (Array.isArray(user)) {
-          values = user.map(() => "(?, ?, ?, ?, ?)").join(", ");
+          values = user.map(() => "(?, ?, ?, ?, ?, ?)").join(", ");
           params = user.flatMap((u) => [
             u.email,
             u.firstName,
             u.lastName,
             u.isUnsubscribed,
             JSON.stringify(u.attributes || {}),
+            u.createdAt,
           ]);
         } else {
-          values = `($email, $firstName, $lastName, $isUnsubscribed, $attributes)`;
+          values = `($email, $firstName, $lastName, $isUnsubscribed, $attributes, $createdAt)`;
           params = {
             $email: user.email,
             $firstName: user.firstName,
             $lastName: user.lastName,
             $isUnsubscribed: user.isUnsubscribed || false,
             $attributes: JSON.stringify(user.attributes || {}),
+            $createdAt: user.createdAt || Date.now(),
           };
         }
 
         if (!Array.isArray(user) && user.recordId) {
           params.$recordId = user.recordId;
           delete params.$isUnsubscribed;
+          delete params.$createdAt;
 
           query = `
             UPDATE users SET
@@ -339,7 +343,7 @@ const store: SqliteStore = {
         } else {
           query = `
             INSERT INTO users
-              (email, first_name, last_name, is_unsubscribed, attributes)
+              (email, first_name, last_name, is_unsubscribed, attributes, created_at)
             VALUES
               ${values}`;
         }
@@ -357,7 +361,10 @@ const store: SqliteStore = {
                 return resolve(user);
               }
 
-              user.recordId = this.lastID.toString();
+              if (!user.recordId) {
+                user.recordId = this.lastID.toString();
+              }
+
               return resolve(user);
             }
           );

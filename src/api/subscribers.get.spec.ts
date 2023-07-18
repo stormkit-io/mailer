@@ -20,6 +20,7 @@ describe("GET /api/subscribers", () => {
             package: "free-tier",
           },
           isUnsubscribed: false,
+          createdAt: Date.now(),
         },
         {
           recordId: "2",
@@ -30,6 +31,7 @@ describe("GET /api/subscribers", () => {
             package: "enterprise",
           },
           isUnsubscribed: true,
+          createdAt: Date.now(),
         },
       ];
 

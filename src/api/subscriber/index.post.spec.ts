@@ -1,5 +1,3 @@
-import * as http from "node:http";
-import { Socket } from "node:net";
 import { StatusCodes } from "http-status-codes";
 import { makeRequest } from "../_utils/test_utils";
 import app from "./index.post";
@@ -16,7 +14,12 @@ describe("POST /api/subscriber", () => {
   });
 
   it("creates a new user entity", async () => {
-    const user: User = { email: "test@stormkit.io", isUnsubscribed: false };
+    const user: User = {
+      email: "test@stormkit.io",
+      isUnsubscribed: false,
+      createdAt: Date.now(),
+    };
+
     const retVal = await makeRequest(app, { method: "POST", data: user });
 
     expect(retVal).toMatchObject({

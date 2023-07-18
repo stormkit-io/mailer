@@ -43,6 +43,7 @@ export default hu.app(
           lastName: user.lastName?.trim(),
           isUnsubscribed: user.isUnsubscribed,
           attributes: user.attributes,
+          createdAt: user.recordId ? user.createdAt : Date.now(),
         }),
       },
       { status: StatusCodes.CREATED }

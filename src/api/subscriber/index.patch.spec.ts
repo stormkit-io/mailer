@@ -4,9 +4,14 @@ import db from "../_db";
 import app from "./index.post";
 
 describe("PATCH /api/subscriber", () => {
-  it.only("updates a user entity", async () => {
+  it("updates a user entity", async () => {
     const store = await db();
-    const user: User = { email: "test@stormkit.io", isUnsubscribed: false };
+    const user: User = {
+      email: "test@stormkit.io",
+      isUnsubscribed: false,
+      createdAt: Date.now(),
+    };
+
     await store.users.store(user);
 
     const response = await makeRequest(app, { method: "PATCH", data: user });

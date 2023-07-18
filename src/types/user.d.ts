@@ -5,4 +5,5 @@ declare interface User {
   lastName?: string;
   isUnsubscribed: boolean;
   attributes?: Record<string, unknown>;
+  createdAt: number;
 }

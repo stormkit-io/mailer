@@ -50,10 +50,11 @@ const store: Store = {
       );
     },
 
-    async store(user: User) {
+    async store(user) {
       try {
         const result = await ds.store("users", user, {
           unique: ["email"],
+          whereNotExists: ["email"],
         });
 
         if (Array.isArray(user)) {
