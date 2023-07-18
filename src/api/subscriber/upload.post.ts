@@ -23,10 +23,47 @@ export default hu.app(
       return hu.send(res, { errors }, { status: StatusCodes.BAD_REQUEST });
     }
 
+    const content = fs.readFileSync(file.filepath).toString("utf-8");
+    const users: User[] = [];
+
+    content
+      .split("\n")
+      .slice(1)
+      .forEach((row) => {
+        const [email, firstName, lastName, attrs] = row.split(",");
+
+        if (!email) {
+          return;
+        }
+
+        try {
+          users.push({
+            email: email.replaceAll('"', ""),
+            firstName,
+            lastName,
+            isUnsubscribed: false,
+            attributes: attrs ? JSON.parse(attrs) : undefined,
+            createdAt: Date.now(),
+          });
+        } catch {}
+      });
+
+    try {
+      await store.users.store(users);
+    } catch {
+      return hu.send(
+        res,
+        { error: "Error while inserting records" },
+        { status: StatusCodes.INTERNAL_SERVER_ERROR }
+      );
+    }
+
     return hu.send(
       res,
       {
-        content: fs.readFileSync(file.filepath).toString("utf-8"),
+        created: users.filter((u) => Boolean(u.recordId)),
+        duplicate: users.filter((u) => !u.recordId),
+        total: users.length,
       },
       { status: StatusCodes.CREATED }
     );
