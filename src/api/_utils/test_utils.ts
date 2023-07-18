@@ -1,5 +1,6 @@
 import * as http from "node:http";
 import { Socket } from "node:net";
+import { Readable } from "node:stream";
 
 interface Opts {
   method: "POST" | "GET" | "PATCH" | "DELETE" | "PUT" | "HEAD";
@@ -33,6 +34,11 @@ export const makeRequest = async (
     request.method = options.method;
   }
 
+  request.headers = {
+    "content-type": "application/json",
+    "content-length": `${JSON.stringify(options?.data || {}).length}`,
+  };
+
   const writeSpy = jest.spyOn(response, "write");
 
   const retVal: {
@@ -44,26 +50,38 @@ export const makeRequest = async (
   app(request, response);
 
   if (options?.data) {
-    request.emit("data", JSON.stringify(options?.data));
-    request.emit("end");
+    const originalListener = request.on;
+
+    request.on = (...args: any) => {
+      const event: string = args.shift();
+      const listener: (args?: any) => void = args.shift();
+
+      if (event === "data") {
+        listener(JSON.stringify(options.data));
+      } else if (event === "end") {
+        listener();
+      } else if (event && listener) {
+        originalListener.bind(request, event, listener, ...args);
+      }
+
+      return request;
+    };
   }
 
-  await Promise.all([
-    new Promise((resolve) => {
-      writeSpy.mockImplementation((chunk, _, __) => {
-        retVal.statusCode = response.statusCode;
-        retVal.statusMessage = response.statusMessage;
+  return new Promise((resolve) => {
+    writeSpy.mockImplementation((chunk, _, __) => {
+      retVal.statusCode = response.statusCode;
+      retVal.statusMessage = response.statusMessage;
 
-        try {
-          retVal.body = JSON.parse(chunk);
-        } catch {
-          retVal.body = chunk;
-        }
-        resolve(true);
-        return true;
-      });
-    }),
-  ]);
+      try {
+        retVal.body = JSON.parse(chunk);
+      } catch {
+        retVal.body = chunk;
+      }
 
-  return retVal;
+      resolve(retVal);
+
+      return true;
+    });
+  });
 };

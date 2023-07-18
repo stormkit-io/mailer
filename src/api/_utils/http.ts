@@ -11,7 +11,7 @@ async function readBody<T>(req: CustomIncomingMessage<T>): Promise<T> {
   const form = formidable({});
 
   if (req.method === "GET") {
-    return {} as T;
+    return Promise.resolve({} as T);
   }
 
   if (req.__body) {
