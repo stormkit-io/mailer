@@ -29,7 +29,14 @@ export default function Prompt({
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={{
+          mb: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Button variant="outlined" onClick={onCancel}>
           Cancel
         </Button>
