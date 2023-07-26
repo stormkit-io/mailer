@@ -67,6 +67,7 @@ export default function Users() {
               type="file"
               onChange={(e) => {
                 setCsvFile(e.target?.files?.[0]);
+                e.target.value = "";
               }}
             />
           </Button>
@@ -148,8 +149,12 @@ export default function Users() {
       <UploadDialog
         open={Boolean(csvFile)}
         file={csvFile}
-        onClose={() => {
+        onClose={(numberOfCreatedUsers) => {
           setCsvFile(undefined);
+
+          if (numberOfCreatedUsers > 0) {
+            setRefreshToken(Date.now());
+          }
         }}
       />
 
