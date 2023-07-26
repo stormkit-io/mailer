@@ -100,7 +100,7 @@ export default createTheme({
       dark: "#0f0f0f",
     },
     secondary: {
-      main: "#853295", // Pastel orange
+      main: "#d135ef",
       light: "#c895cd",
       dark: "#491f72",
     },
