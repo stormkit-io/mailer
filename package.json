@@ -22,7 +22,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.133",
-    "@mui/material": "^5.13.5",
+    "@mui/material": "^5.14.8",
     "@stormkit/ds": "^1.4.2",
     "formidable": "^3.5.0",
     "http-status-codes": "^2.2.0",
